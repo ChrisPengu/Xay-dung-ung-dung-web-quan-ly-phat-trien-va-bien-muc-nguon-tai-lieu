@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout('Chỉnh sửa bản ấn phẩm', 'documents', ~{::main})}">
+<main>
+    <header class="page-heading">
+        <div><span class="eyebrow" th:text="${document.catalogCode}">Mã</span><h1>Chỉnh sửa bản ấn phẩm</h1><p th:text="${document.title}">Tài liệu</p></div>
+        <div class="heading-actions"><a class="button" th:href="${'/documents/' + document.id + '#copies'}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Quay lại biểu ghi</a></div>
+    </header>
+
+    <section class="card">
+        <header class="card-header"><div><h2>Thông tin bản vật lý</h2><p>Cập nhật số đăng ký cá biệt, vị trí, tình trạng và trạng thái lưu thông.</p></div><span class="badge badge-info">Bản ấn phẩm</span></header>
+        <form class="card-body" th:object="${copyForm}" th:action="@{/documents/{documentId}/copies/{copyId}(documentId=${document.id},copyId=${copyForm.id})}" method="post">
+            <div class="form-errors" th:if="${#fields.hasGlobalErrors()}" role="alert"><p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Lỗi</p></div>
+            <div class="form-grid grid-3">
+                <div class="field"><label class="required" for="accessionNumber">Số đăng ký cá biệt</label><input class="input" id="accessionNumber" th:field="*{accessionNumber}" th:classappend="${#fields.hasErrors('accessionNumber')} ? ' input-invalid'"><span class="field-error" th:errors="*{accessionNumber}">Lỗi</span></div>
+                <div class="field"><label class="required" for="acquiredDate">Ngày bổ sung</label><input class="input" id="acquiredDate" type="date" th:field="*{acquiredDate}"><span class="field-error" th:errors="*{acquiredDate}">Lỗi</span></div>
+                <div class="field"><label for="price">Đơn giá (VNĐ)</label><input class="input" id="price" type="number" min="0" step="1000" th:field="*{price}"><span class="field-error" th:errors="*{price}">Lỗi</span></div>
+                <div class="field"><label class="required" for="location">Vị trí</label><input class="input" id="location" th:field="*{location}"><span class="field-error" th:errors="*{location}">Lỗi</span></div>
+                <div class="field"><label for="condition">Tình trạng vật lý</label><select class="select" id="condition" th:field="*{condition}"><option th:each="item : ${copyConditions}" th:value="${item}" th:text="${item.label}">Tình trạng</option></select></div>
+                <div class="field"><label for="copyStatus">Trạng thái lưu thông</label><select class="select" id="copyStatus" th:field="*{status}"><option th:each="item : ${copyStatuses}" th:value="${item}" th:text="${item.label}">Trạng thái</option></select></div>
+                <div class="field full"><label for="copyNote">Ghi chú</label><textarea class="textarea" id="copyNote" th:field="*{note}"></textarea><span class="field-error" th:errors="*{note}">Lỗi</span></div>
+            </div>
+            <div class="form-actions"><a class="button" th:href="${'/documents/' + document.id + '#copies'}">Hủy</a><button class="button button-primary" type="submit"><i class="bi bi-check-lg" aria-hidden="true"></i> Lưu thay đổi</button></div>
+        </form>
+    </section>
+</main>
+</html>

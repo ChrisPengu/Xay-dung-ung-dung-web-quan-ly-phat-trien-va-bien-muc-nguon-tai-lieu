@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout('Biên mục tài liệu', 'documents', ~{::main})}">
+<main>
+    <header class="page-heading">
+        <div><span class="eyebrow">Kho tri thức</span><h1>Biên mục tài liệu</h1><p>Tìm kiếm, chuẩn hóa mô tả thư mục và quản lý các bản ấn phẩm.</p></div>
+        <div class="heading-actions" th:if="${canCatalog}">
+            <a class="button button-primary" th:href="@{/documents/new}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Thêm biểu ghi</a>
+        </div>
+    </header>
+
+    <form class="card filter-bar" method="get" th:action="@{/documents}">
+        <div class="field"><label for="keyword">Từ khóa</label><input class="input" id="keyword" name="keyword" th:value="${keyword}" placeholder="Nhan đề, mã, ISBN, tác giả hoặc số ĐKCB…"></div>
+        <div class="field"><label for="categoryId">Thể loại</label><select class="select" id="categoryId" name="categoryId"><option value="">Tất cả thể loại</option><option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}" th:selected="${category.id == categoryId}">Thể loại</option></select></div>
+        <div class="field"><label for="status">Trạng thái</label><select class="select" id="status" name="status"><option value="">Tất cả trạng thái</option><option th:each="item : ${statuses}" th:value="${item}" th:text="${item.label}" th:selected="${item == selectedStatus}">Trạng thái</option></select></div>
+        <button class="button button-primary" type="submit">Tìm kiếm</button>
+    </form>
+
+    <section class="card">
+        <header class="card-header"><div><h2>Danh sách biểu ghi</h2><p th:text="${#numbers.formatInteger(documents.totalElements, 1, 'POINT') + ' kết quả'}">0 kết quả</p></div><a class="button button-sm" th:href="@{/documents}" th:if="${!#strings.isEmpty(keyword) or categoryId != null or selectedStatus != null}">Xóa bộ lọc</a></header>
+        <div class="table-wrap" th:if="${!documents.empty}">
+            <table><thead><tr><th>Mã</th><th>Nhan đề</th><th>Xuất bản</th><th>Phân loại</th><th>Trạng thái</th><th><span class="sr-only">Thao tác</span></th></tr></thead>
+            <tbody><tr th:each="document : ${documents.content}">
+                <td><a class="code" th:href="@{/documents/{id}(id=${document.id})}" th:text="${document.catalogCode}">Mã</a></td>
+                <td><a class="cell-title" th:href="@{/documents/{id}(id=${document.id})}" th:text="${document.title}">Nhan đề</a><span class="cell-subtitle" th:text="${document.isbn != null ? 'ISBN ' + document.isbn : document.language}">ISBN</span></td>
+                <td><span th:text="${document.publisher != null ? document.publisher.name : '—'}">NXB</span><span class="cell-subtitle" th:text="${document.publicationYear ?: 'Chưa rõ năm'}">Năm</span></td>
+                <td><span th:text="${document.category.name}">Thể loại</span><span class="cell-subtitle code" th:text="${document.callNumber ?: 'Chưa xếp giá'}">Ký hiệu</span></td>
+                <td><span class="badge" th:classappend="${' badge-' + document.status.tone}" th:text="${document.status.label}">Trạng thái</span></td>
+                <td><div class="cell-actions"><a class="button button-sm" th:href="@{/documents/{id}(id=${document.id})}"><i class="bi bi-eye" aria-hidden="true"></i> Chi tiết</a><a class="button button-sm button-ghost" th:href="@{/documents/{id}/edit(id=${document.id})}" th:if="${canCatalog}"><i class="bi bi-pencil" aria-hidden="true"></i> Sửa</a><a class="button button-sm button-ghost" th:href="@{/documents/{id}/duplicate(id=${document.id})}" th:if="${canCatalog}" title="Sao chép dữ liệu để tạo biểu ghi mới"><i class="bi bi-copy" aria-hidden="true"></i> Sao chép</a><form th:if="${canCatalog}" th:action="@{/documents/{id}/delete(id=${document.id})}" method="post" data-confirm="Chỉ có thể xóa biểu ghi chưa có bản ấn phẩm và chưa nằm trong đề xuất. Tiếp tục?"><button class="button button-sm button-danger" type="submit"><i class="bi bi-trash3" aria-hidden="true"></i> Xóa</button></form></div></td>
+            </tr></tbody></table>
+        </div>
+        <div class="empty-state" th:if="${documents.empty}"><i class="empty-icon bi bi-search" aria-hidden="true"></i><h3>Không tìm thấy tài liệu</h3><p>Thử thay đổi từ khóa hoặc xóa bớt điều kiện lọc.</p><a class="button" th:href="@{/documents}">Xóa bộ lọc</a></div>
+        <nav class="pagination" aria-label="Phân trang" th:if="${documents.totalPages > 1}">
+            <span th:text="${'Trang ' + (documents.number + 1) + ' / ' + documents.totalPages}">Trang</span>
+            <div class="pagination-links">
+                <a class="page-link" th:classappend="${documents.first} ? ' disabled'" th:href="@{/documents(page=${documents.number - 1},size=${documents.size},keyword=${keyword},categoryId=${categoryId},status=${selectedStatus})}" aria-label="Trang trước">←</a>
+                <span class="page-link" th:text="${documents.number + 1}">1</span>
+                <a class="page-link" th:classappend="${documents.last} ? ' disabled'" th:href="@{/documents(page=${documents.number + 1},size=${documents.size},keyword=${keyword},categoryId=${categoryId},status=${selectedStatus})}" aria-label="Trang sau">→</a>
+            </div>
+        </nav>
+    </section>
+</main>
+</html>

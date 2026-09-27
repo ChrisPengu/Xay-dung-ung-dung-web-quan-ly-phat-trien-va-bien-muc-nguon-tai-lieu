@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout('Chi tiết tài liệu', 'documents', ~{::main})}">
+<main>
+    <header class="page-heading">
+        <div><span class="eyebrow" th:text="${document.catalogCode}">Mã</span><h1 class="detail-title" th:text="${document.title}">Nhan đề</h1><p class="detail-subtitle" th:if="${document.subtitle}" th:text="${document.subtitle}">Nhan đề phụ</p><div class="meta-line"><span class="badge" th:classappend="${' badge-' + document.status.tone}" th:text="${document.status.label}">Trạng thái</span><span th:text="${document.category.name}">Thể loại</span><span th:text="${document.language}">Ngôn ngữ</span></div></div>
+        <div class="heading-actions"><a class="button" th:href="@{/documents}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Danh sách</a><a class="button" th:href="@{/documents/{id}/duplicate(id=${document.id})}" th:if="${canCatalog}"><i class="bi bi-copy" aria-hidden="true"></i> Sao chép</a><a class="button button-primary" th:href="@{/documents/{id}/edit(id=${document.id})}" th:if="${canCatalog}"><i class="bi bi-pencil" aria-hidden="true"></i> Chỉnh sửa</a></div>
+    </header>
+
+    <div class="content-grid">
+        <div class="stack">
+            <section class="card">
+                <header class="card-header"><div><h2>Thông tin thư mục</h2><p>Mô tả nhận dạng và xuất bản</p></div></header>
+                <div class="card-body"><dl class="definition-list">
+                    <div class="definition-row"><dt>Tác giả</dt><dd><span th:if="${document.authors.empty}">Chưa xác định</span><span th:each="author, iter : ${document.authors}" th:text="${author.name + (!iter.last ? ', ' : '')}">Tác giả</span></dd></div>
+                    <div class="definition-row"><dt>ISBN</dt><dd class="code" th:text="${document.isbn ?: '—'}">ISBN</dd></div>
+                    <div class="definition-row"><dt>Xuất bản</dt><dd th:text="${(document.publisher != null ? document.publisher.name : 'Chưa rõ NXB') + (document.publicationYear != null ? ', ' + document.publicationYear : '')}">Xuất bản</dd></div>
+                    <div class="definition-row"><dt>Lần xuất bản</dt><dd th:text="${document.edition ?: '—'}">Ấn bản</dd></div>
+                    <div class="definition-row"><dt>Mô tả vật lý</dt><dd th:text="${document.physicalDescription ?: '—'}">Mô tả</dd></div>
+                    <div class="definition-row"><dt>Số phân loại</dt><dd class="code" th:text="${document.classificationNumber ?: '—'}">Số</dd></div>
+                    <div class="definition-row"><dt>Ký hiệu xếp giá</dt><dd class="code" th:text="${document.callNumber ?: '—'}">Ký hiệu</dd></div>
+                </dl></div>
+            </section>
+            <section class="card" th:if="${document.summary != null or document.keywords != null}">
+                <header class="card-header"><div><h2>Nội dung &amp; chủ đề</h2></div></header>
+                <div class="card-body"><p class="summary" th:if="${document.summary}" th:text="${document.summary}">Tóm tắt</p><div th:if="${document.keywords}"><span class="tag" th:each="keyword : ${#strings.arraySplit(document.keywords, ',')}" th:text="${#strings.trim(keyword)}" style="margin:3px">Từ khóa</span></div></div>
+            </section>
+        </div>
+        <aside class="stack">
+            <section class="card"><header class="card-header"><div><h2>Tình trạng kho</h2><p th:text="${copies.size() + ' bản ấn phẩm'}">0 bản</p></div></header><div class="card-body grid grid-2"><div><span class="stat-label">Tổng số</span><strong class="stat-value" th:text="${copies.size()}">0</strong></div><div><span class="stat-label">Sẵn sàng</span><strong class="stat-value" th:text="${#lists.size(copies.?[status.name() == 'AVAILABLE'])}">0</strong></div></div></section>
+            <section class="card" th:if="${canCatalog}"><div class="card-body"><span class="eyebrow">Quản lý biểu ghi</span><form th:action="@{/documents/{id}/delete(id=${document.id})}" method="post" data-confirm="Xóa biểu ghi này? Thao tác không thể hoàn tác."><button class="button button-danger" type="submit">Xóa biểu ghi</button></form></div></section>
+        </aside>
+    </div>
+
+    <section class="card mt-3" id="copies">
+        <header class="card-header"><div><h2>Bản ấn phẩm</h2><p>Quản lý số đăng ký cá biệt và trạng thái lưu thông.</p></div></header>
+        <div class="table-wrap" th:if="${!copies.empty}"><table><thead><tr><th>Số ĐKCB</th><th>Ngày bổ sung</th><th>Vị trí</th><th>Tình trạng</th><th>Trạng thái</th><th></th></tr></thead><tbody><tr th:each="copy : ${copies}">
+            <td><span class="code" th:text="${copy.accessionNumber}">Mã</span><span class="cell-subtitle amount" th:if="${copy.price}" th:text="${#numbers.formatDecimal(copy.price, 0, 'POINT', 0, 'COMMA') + ' ₫'}">Giá</span></td>
+            <td th:text="${#temporals.format(copy.acquiredDate, 'dd/MM/yyyy')}">Ngày</td><td th:text="${copy.location}">Vị trí</td><td th:text="${copy.condition.label}">Tình trạng</td><td><span class="badge" th:classappend="${' badge-' + copy.status.tone}" th:text="${copy.status.label}">Trạng thái</span></td>
+            <td><div class="cell-actions" th:if="${canCatalog}"><form class="inline-form" th:action="@{/documents/{documentId}/copies/{copyId}/status(documentId=${document.id},copyId=${copy.id})}" method="post"><label class="sr-only" th:for="${'status-' + copy.id}">Trạng thái</label><select class="select" th:id="${'status-' + copy.id}" name="status"><option th:each="status : ${copyStatuses}" th:value="${status}" th:text="${status.label}" th:selected="${status == copy.status}">Trạng thái</option></select><button class="button button-sm" type="submit">Lưu trạng thái</button></form><a class="button button-sm button-ghost" th:href="@{/documents/{documentId}/copies/{copyId}/edit(documentId=${document.id},copyId=${copy.id})}"><i class="bi bi-pencil" aria-hidden="true"></i> Sửa</a><form th:action="@{/documents/{documentId}/copies/{copyId}/delete(documentId=${document.id},copyId=${copy.id})}" method="post" data-confirm="Không thể xóa bản đang được mượn. Bạn có chắc muốn xóa bản ấn phẩm này?"><button class="button button-sm button-danger" type="submit"><i class="bi bi-trash3" aria-hidden="true"></i> Xóa</button></form></div></td>
+        </tr></tbody></table></div>
+        <div class="empty-state" th:if="${copies.empty}"><i class="empty-icon bi bi-collection" aria-hidden="true"></i><h3>Chưa có bản ấn phẩm</h3><p>Thêm bản thủ công hoặc hoàn tất một đề xuất bổ sung.</p></div>
+    </section>
+
+    <section class="card mt-3" th:if="${canCatalog}">
+        <header class="card-header"><div><h2>Thêm bản ấn phẩm</h2><p>Đăng ký một bản vật lý vào kho.</p></div></header>
+        <form class="card-body" th:object="${copyForm}" th:action="@{/documents/{id}/copies(id=${document.id})}" method="post">
+            <div class="form-errors" th:if="${#fields.hasGlobalErrors()}" role="alert"><p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Lỗi</p></div>
+            <div class="form-grid grid-3">
+                <div class="field"><label class="required" for="accessionNumber">Số đăng ký cá biệt</label><input class="input" id="accessionNumber" th:field="*{accessionNumber}" placeholder="VD: TL-CNTT-001-003"><span class="field-error" th:errors="*{accessionNumber}">Lỗi</span></div>
+                <div class="field"><label class="required" for="acquiredDate">Ngày bổ sung</label><input class="input" id="acquiredDate" type="date" th:field="*{acquiredDate}"><span class="field-error" th:errors="*{acquiredDate}">Lỗi</span></div>
+                <div class="field"><label for="price">Đơn giá (VNĐ)</label><input class="input" id="price" type="number" min="0" step="1000" th:field="*{price}"><span class="field-error" th:errors="*{price}">Lỗi</span></div>
+                <div class="field"><label class="required" for="location">Vị trí</label><input class="input" id="location" th:field="*{location}"><span class="field-error" th:errors="*{location}">Lỗi</span></div>
+                <div class="field"><label for="condition">Tình trạng vật lý</label><select class="select" id="condition" th:field="*{condition}"><option th:each="item : ${copyConditions}" th:value="${item}" th:text="${item.label}">Tình trạng</option></select></div>
+                <div class="field"><label for="copyStatus">Trạng thái</label><select class="select" id="copyStatus" th:field="*{status}"><option th:each="item : ${copyStatuses}" th:value="${item}" th:text="${item.label}">Trạng thái</option></select></div>
+                <div class="field full"><label for="copyNote">Ghi chú</label><input class="input" id="copyNote" th:field="*{note}"><span class="field-error" th:errors="*{note}">Lỗi</span></div>
+            </div><div class="form-actions"><button class="button button-primary" type="submit"><i class="bi bi-plus-lg" aria-hidden="true"></i> Thêm bản ấn phẩm</button></div>
+        </form>
+    </section>
+</main>
+</html>

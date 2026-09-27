@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout('Chi tiết đề xuất', 'acquisitions', ~{::main})}">
+<main>
+    <header class="page-heading">
+        <div><span class="eyebrow" th:text="${request.requestCode}">Mã</span><h1 class="detail-title" th:text="${request.title}">Tên đề xuất</h1><div class="meta-line"><span class="badge" th:classappend="${' badge-' + request.status.tone}" th:text="${request.status.label}">Trạng thái</span><span th:text="${request.requesterName}">Người lập</span><span th:text="${#temporals.format(request.requestDate, 'dd/MM/yyyy')}">Ngày</span></div></div>
+        <div class="heading-actions"><a class="button" th:href="@{/acquisitions}">← Danh sách</a><a class="button" th:if="${request.status.name() == 'DRAFT' and canAcquire}" th:href="@{/acquisitions/{id}/edit(id=${request.id})}">Chỉnh sửa</a></div>
+    </header>
+
+    <section class="card" th:if="${request.status.name() != 'REJECTED'}"><div class="card-body"><div class="timeline" aria-label="Tiến độ đề xuất">
+        <div class="timeline-step" th:classappend="${request.status.name() != 'DRAFT'} ? ' done' : ' current'"><span class="timeline-dot">1</span><span>Bản nháp</span></div>
+        <div class="timeline-step" th:classappend="${request.status.name() == 'PENDING'} ? ' current' : (${request.status.name() == 'APPROVED' or request.status.name() == 'COMPLETED'} ? ' done')"><span class="timeline-dot">2</span><span>Chờ duyệt</span></div>
+        <div class="timeline-step" th:classappend="${request.status.name() == 'APPROVED'} ? ' current' : (${request.status.name() == 'COMPLETED'} ? ' done')"><span class="timeline-dot">3</span><span>Đã duyệt</span></div>
+        <div class="timeline-step" th:classappend="${request.status.name() == 'COMPLETED'} ? ' done current'"><span class="timeline-dot">4</span><span>Hoàn tất</span></div>
+    </div></div></section>
+    <div class="toast toast-error" style="position:relative;top:auto;right:auto;margin-bottom:18px;max-width:none" th:if="${request.status.name() == 'REJECTED'}"><i class="toast-icon bi bi-exclamation-circle-fill" aria-hidden="true"></i><span>Đề xuất đã bị từ chối. Có thể xóa và lập đề xuất mới sau khi điều chỉnh.</span></div>
+
+    <div class="content-grid mt-3">
+        <div class="stack">
+            <section class="card"><header class="card-header"><div><h2>Danh mục tài liệu</h2><p th:text="${request.totalQuantity + ' bản từ ' + request.items.size() + ' tài liệu'}">Số lượng</p></div><strong class="amount" th:text="${#numbers.formatDecimal(request.totalAmount, 0, 'POINT', 0, 'COMMA') + ' ₫'}">0 ₫</strong></header>
+                <div class="table-wrap"><table><thead><tr><th>Tài liệu</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody><tr th:each="item : ${request.items}"><td><a class="cell-title" th:href="@{/documents/{id}(id=${item.document.id})}" th:text="${item.document.title}">Tên</a><span class="cell-subtitle code" th:text="${item.document.catalogCode}">Mã</span></td><td th:text="${item.quantity}">1</td><td class="amount" th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'POINT', 0, 'COMMA') + ' ₫'}">0</td><td class="amount"><strong th:text="${#numbers.formatDecimal(item.lineTotal, 0, 'POINT', 0, 'COMMA') + ' ₫'}">0</strong></td></tr></tbody></table></div>
+            </section>
+            <section class="card" th:if="${request.note}"><header class="card-header"><div><h2>Ghi chú</h2></div></header><div class="card-body"><div class="note-box" th:text="${request.note}">Ghi chú</div></div></section>
+        </div>
+        <aside class="stack">
+            <section class="card"><header class="card-header"><div><h2>Thông tin đề xuất</h2></div></header><div class="card-body"><dl class="definition-list"><div class="definition-row"><dt>Nhà cung cấp</dt><dd th:text="${request.supplier != null ? request.supplier.name : 'Chưa chọn'}">NCC</dd></div><div class="definition-row"><dt>Ngày dự kiến</dt><dd th:text="${request.expectedDate != null ? #temporals.format(request.expectedDate, 'dd/MM/yyyy') : 'Chưa xác định'}">Ngày</dd></div><div class="definition-row" th:if="${request.approvedBy}"><dt>Người duyệt</dt><dd th:text="${request.approvedBy}">Người</dd></div><div class="definition-row" th:if="${request.approvedAt}"><dt>Duyệt lúc</dt><dd th:text="${#temporals.format(request.approvedAt, 'HH:mm dd/MM/yyyy')}">Lúc</dd></div><div class="definition-row" th:if="${request.completedAt}"><dt>Hoàn tất</dt><dd th:text="${#temporals.format(request.completedAt, 'HH:mm dd/MM/yyyy')}">Lúc</dd></div></dl></div></section>
+            <section class="card" th:if="${canAcquire}"><header class="card-header"><div><h2>Thao tác</h2><p>Theo trạng thái hiện tại</p></div></header><div class="card-body stack">
+                <form th:if="${request.status.name() == 'DRAFT'}" th:action="@{/acquisitions/{id}/submit(id=${request.id})}" method="post" data-confirm="Gửi đề xuất để phê duyệt? Sau khi gửi sẽ không thể chỉnh sửa."><button class="button button-primary" style="width:100%" type="submit">Gửi phê duyệt →</button></form>
+                <div class="stack" th:if="${request.status.name() == 'PENDING' and isAdmin}"><form th:action="@{/acquisitions/{id}/approve(id=${request.id})}" method="post" data-confirm="Phê duyệt đề xuất này?"><button class="button button-primary" style="width:100%" type="submit">✓ Phê duyệt</button></form><form th:action="@{/acquisitions/{id}/reject(id=${request.id})}" method="post"><div class="field"><label for="reason">Lý do từ chối</label><textarea class="textarea" id="reason" name="reason" rows="2" placeholder="Nhập lý do…"></textarea></div><button class="button button-danger mt-1" style="width:100%" type="submit">Từ chối</button></form></div>
+                <form th:if="${request.status.name() == 'APPROVED'}" th:action="@{/acquisitions/{id}/complete(id=${request.id})}" method="post" data-confirm="Xác nhận đã nhận đủ tài liệu? Hệ thống sẽ tự tạo các bản ấn phẩm."><button class="button button-accent" style="width:100%" type="submit">Hoàn tất &amp; nhập kho</button></form>
+                <form th:if="${request.status.name() == 'DRAFT' or request.status.name() == 'REJECTED'}" th:action="@{/acquisitions/{id}/delete(id=${request.id})}" method="post" data-confirm="Xóa đề xuất này? Thao tác không thể hoàn tác."><button class="button button-danger" style="width:100%" type="submit">Xóa đề xuất</button></form>
+                <p class="field-hint mb-0" th:if="${request.status.name() == 'PENDING' and !isAdmin}">Đề xuất đang chờ quản trị viên phê duyệt.</p>
+                <p class="field-hint mb-0" th:if="${request.status.name() == 'COMPLETED'}">Quy trình đã hoàn tất; các bản ấn phẩm đã được tạo trong kho.</p>
+            </div></section>
+        </aside>
+    </div>
+</main>
+</html>

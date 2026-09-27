@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(${editing ? 'Chỉnh sửa biểu ghi' : (copying ? 'Sao chép biểu ghi' : 'Thêm biểu ghi')}, 'documents', ~{::main})}">
+<main>
+    <header class="page-heading">
+        <div><span class="eyebrow">Mô tả thư mục</span><h1 th:text="${editing ? 'Chỉnh sửa biểu ghi' : (copying ? 'Sao chép để biên mục' : 'Biên mục tài liệu mới')}">Biên mục</h1><p th:text="${copying ? 'Thông tin mô tả đã được sao chép; hãy kiểm tra lại mã biên mục, ISBN và thông tin ấn bản trước khi lưu.' : 'Điền thông tin nhận dạng, xuất bản, phân loại và nội dung của tài liệu.'}">Hướng dẫn</p></div>
+        <div class="heading-actions"><a class="button" th:href="${editing ? '/documents/' + documentForm.id : '/documents'}">← Quay lại</a></div>
+    </header>
+
+    <form th:object="${documentForm}" th:action="${editing} ? @{/documents/{id}(id=${documentForm.id})} : @{/documents}" method="post">
+        <div class="form-errors" th:if="${#fields.hasGlobalErrors()}" role="alert"><p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Lỗi</p></div>
+        <div class="note-box mb-2" th:if="${copying}"><strong>Biên mục sao chép:</strong> hệ thống đã tạo mã mới, xóa ISBN để tránh trùng định danh và chuyển trạng thái về Bản nháp.</div>
+        <div class="content-grid">
+            <div class="stack">
+                <section class="card">
+                    <header class="card-header"><div><h2>Thông tin nhận dạng</h2><p>Các trường chính giúp nhận diện biểu ghi.</p></div><span class="badge badge-info">Bắt buộc</span></header>
+                    <div class="card-body form-grid">
+                        <div class="field"><label class="required" for="catalogCode">Mã biên mục</label><input class="input" id="catalogCode" th:field="*{catalogCode}" th:classappend="${#fields.hasErrors('catalogCode')} ? ' input-invalid'" placeholder="VD: TL-CNTT-003"><span class="field-error" th:errors="*{catalogCode}">Lỗi</span></div>
+                        <div class="field"><label for="isbn">ISBN</label><input class="input" id="isbn" th:field="*{isbn}" inputmode="numeric" th:classappend="${#fields.hasErrors('isbn')} ? ' input-invalid'" placeholder="13 chữ số, không dùng gạch ngang"><span class="field-error" th:errors="*{isbn}">Lỗi</span></div>
+                        <div class="field full"><label class="required" for="title">Nhan đề chính</label><input class="input" id="title" th:field="*{title}" th:classappend="${#fields.hasErrors('title')} ? ' input-invalid'" placeholder="Nhan đề trên trang tên sách"><span class="field-error" th:errors="*{title}">Lỗi</span></div>
+                        <div class="field full"><label for="subtitle">Nhan đề phụ</label><input class="input" id="subtitle" th:field="*{subtitle}" th:classappend="${#fields.hasErrors('subtitle')} ? ' input-invalid'"><span class="field-error" th:errors="*{subtitle}">Lỗi</span></div>
+                        <div class="field"><label class="required" for="categoryId">Thể loại</label><select class="select" id="categoryId" th:field="*{categoryId}" th:classappend="${#fields.hasErrors('categoryId')} ? ' input-invalid'"><option value="">— Chọn thể loại —</option><option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.code + ' · ' + category.name}">Thể loại</option></select><span class="field-error" th:errors="*{categoryId}">Lỗi</span></div>
+                        <div class="field"><label class="required" for="status">Trạng thái biên mục</label><select class="select" id="status" th:field="*{status}"><option th:each="item : ${statuses}" th:value="${item}" th:text="${item.label}">Trạng thái</option></select><span class="field-error" th:errors="*{status}">Lỗi</span></div>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <header class="card-header"><div><h2>Thông tin xuất bản</h2><p>Tác giả, nhà xuất bản và đặc điểm ấn bản.</p></div></header>
+                    <div class="card-body form-grid">
+                        <div class="field full"><span class="field-label">Tác giả</span><div class="check-grid"><label class="check-option" th:each="author : ${authors}"><input type="checkbox" th:field="*{authorIds}" th:value="${author.id}"><span th:text="${author.name}">Tác giả</span></label><span th:if="${authors.empty}" class="field-hint">Chưa có tác giả trong dữ liệu danh mục.</span></div></div>
+                        <div class="field"><label for="publisherId">Nhà xuất bản</label><select class="select" id="publisherId" th:field="*{publisherId}"><option value="">— Chưa xác định —</option><option th:each="publisher : ${publishers}" th:value="${publisher.id}" th:text="${publisher.name}">NXB</option></select></div>
+                        <div class="field"><label for="publicationYear">Năm xuất bản</label><input class="input" id="publicationYear" type="number" min="1000" max="2100" th:field="*{publicationYear}" th:classappend="${#fields.hasErrors('publicationYear')} ? ' input-invalid'" placeholder="2026"><span class="field-error" th:errors="*{publicationYear}">Lỗi</span></div>
+                        <div class="field"><label for="edition">Lần xuất bản</label><input class="input" id="edition" th:field="*{edition}" placeholder="VD: Tái bản lần 2"><span class="field-error" th:errors="*{edition}">Lỗi</span></div>
+                        <div class="field"><label class="required" for="language">Ngôn ngữ</label><input class="input" id="language" th:field="*{language}" th:classappend="${#fields.hasErrors('language')} ? ' input-invalid'"><span class="field-error" th:errors="*{language}">Lỗi</span></div>
+                        <div class="field full"><label for="physicalDescription">Mô tả vật lý</label><input class="input" id="physicalDescription" th:field="*{physicalDescription}" placeholder="VD: 328 trang; minh họa; 24 cm"><span class="field-error" th:errors="*{physicalDescription}">Lỗi</span></div>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <header class="card-header"><div><h2>Nội dung</h2><p>Thông tin hỗ trợ tra cứu và khám phá tài liệu.</p></div></header>
+                    <div class="card-body form-grid">
+                        <div class="field full"><label for="keywords">Từ khóa</label><input class="input" id="keywords" th:field="*{keywords}" placeholder="Phân cách các từ khóa bằng dấu phẩy"><span class="field-error" th:errors="*{keywords}">Lỗi</span></div>
+                        <div class="field full"><label for="summary">Tóm tắt</label><textarea class="textarea" id="summary" th:field="*{summary}" rows="6" placeholder="Mô tả ngắn gọn phạm vi và nội dung tài liệu"></textarea><span class="field-error" th:errors="*{summary}">Lỗi</span></div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="stack">
+                <section class="card">
+                    <header class="card-header"><div><h2>Phân loại &amp; xếp giá</h2><p>Chuẩn hóa vị trí tra cứu.</p></div></header>
+                    <div class="card-body stack">
+                        <div class="field"><label for="classificationNumber">Số phân loại</label><input class="input" id="classificationNumber" th:field="*{classificationNumber}" placeholder="VD: 005.133"><span class="field-error" th:errors="*{classificationNumber}">Lỗi</span></div>
+                        <div class="field"><label for="callNumber">Ký hiệu xếp giá</label><input class="input" id="callNumber" th:field="*{callNumber}" placeholder="VD: 005.133 BLO"><span class="field-error" th:errors="*{callNumber}">Lỗi</span><span class="field-hint">Kết hợp số phân loại và ký hiệu tác giả.</span></div>
+                    </div>
+                </section>
+                <section class="card"><div class="card-body"><span class="eyebrow">Gợi ý chất lượng</span><p class="summary mb-0">Đối chiếu thông tin trên trang tên sách. Dùng thuật ngữ nhất quán cho từ khóa và mô tả vật lý để cải thiện kết quả tìm kiếm.</p></div></section>
+            </aside>
+        </div>
+        <div class="form-actions"><a class="button" th:href="${editing ? '/documents/' + documentForm.id : '/documents'}">Hủy</a><button class="button button-primary" type="submit"><i class="bi bi-check-lg" aria-hidden="true"></i><span th:text="${editing ? 'Lưu thay đổi' : 'Tạo biểu ghi'}">Lưu</span></button></div>
+    </form>
+</main>
+</html>

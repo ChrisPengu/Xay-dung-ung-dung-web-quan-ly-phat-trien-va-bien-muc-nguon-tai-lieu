@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout('Quản lý người dùng', 'users', ~{::main})}">
+<main>
+    <header class="page-heading">
+        <div><span class="eyebrow">Quản trị hệ thống</span><h1>Quản lý người dùng</h1><p>Phân quyền theo nghiệp vụ và vô hiệu hóa tài khoản khi nhân sự không còn làm việc.</p></div>
+        <div class="heading-actions"><a class="button button-primary" th:href="@{/users/new}"><i class="bi bi-person-plus" aria-hidden="true"></i> Thêm tài khoản</a></div>
+    </header>
+
+    <section class="card">
+        <header class="card-header"><div><h2>Danh sách tài khoản</h2><p th:text="${users.size() + ' người dùng'}">0 người dùng</p></div></header>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Người dùng</th><th>Tên đăng nhập</th><th>Vai trò</th><th>Trạng thái</th><th><span class="sr-only">Thao tác</span></th></tr></thead>
+                <tbody><tr th:each="user : ${users}">
+                    <td><span class="cell-title" th:text="${user.fullName}">Họ tên</span><span class="cell-subtitle" th:text="${user.email ?: 'Chưa có email'}">Email</span></td>
+                    <td><span class="code" th:text="${user.username}">username</span><span class="cell-subtitle" th:if="${user.id == currentUser.id}">Tài khoản của bạn</span></td>
+                    <td th:text="${user.role.label}">Vai trò</td>
+                    <td><span class="badge" th:classappend="${user.active ? ' badge-success' : ' badge-neutral'}" th:text="${user.active ? 'Đang hoạt động' : 'Đã vô hiệu hóa'}">Trạng thái</span></td>
+                    <td><div class="cell-actions">
+                        <a class="button button-sm" th:href="@{/users/{id}/edit(id=${user.id})}"><i class="bi bi-pencil" aria-hidden="true"></i> Sửa</a>
+                        <form th:if="${user.id != currentUser.id}" th:action="@{/users/{id}/active(id=${user.id})}" method="post" th:attr="data-confirm=${user.active ? 'Vô hiệu hóa tài khoản này?' : 'Kích hoạt lại tài khoản này?'}">
+                            <input type="hidden" name="active" th:value="${!user.active}">
+                            <button class="button button-sm" th:classappend="${user.active ? ' button-danger' : ' button-primary'}" type="submit"><i class="bi" th:classappend="${user.active ? ' bi-person-x' : ' bi-person-check'}" aria-hidden="true"></i> <span th:text="${user.active ? 'Vô hiệu hóa' : 'Kích hoạt'}">Đổi trạng thái</span></button>
+                        </form>
+                    </div></td>
+                </tr></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</html>

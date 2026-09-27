@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+    <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+        <mapEntry key="DEBUG" value="false"/>
+    </mapAttribute>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+        <listEntry value="/docucatalog/src/main/java/vn/edu/docucatalog/DocuCatalogApplication.java"/>
+    </listAttribute>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+        <listEntry value="1"/>
+    </listAttribute>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="vn.edu.docucatalog.DocuCatalogApplication"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="docucatalog"/>
+    <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:/docucatalog}"/>
+</launchConfiguration>

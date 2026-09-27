@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout('Phát triển nguồn', 'acquisitions', ~{::main})}">
+<main>
+    <header class="page-heading">
+        <div><span class="eyebrow">Bổ sung tài liệu</span><h1>Phát triển nguồn</h1><p>Lập kế hoạch, phê duyệt và theo dõi quá trình bổ sung tài liệu vào kho.</p></div>
+        <div class="heading-actions" th:if="${canAcquire}"><a class="button button-primary" th:href="@{/acquisitions/new}">+ Tạo đề xuất</a></div>
+    </header>
+
+    <form class="card filter-bar" method="get" th:action="@{/acquisitions}" style="grid-template-columns:minmax(240px,1fr) 210px auto">
+        <div class="field"><label for="keyword">Từ khóa</label><input class="input" id="keyword" name="keyword" th:value="${keyword}" placeholder="Mã hoặc tên đề xuất…"></div>
+        <div class="field"><label for="status">Trạng thái</label><select class="select" id="status" name="status"><option value="">Tất cả trạng thái</option><option th:each="item : ${statuses}" th:value="${item}" th:text="${item.label}" th:selected="${item == selectedStatus}">Trạng thái</option></select></div>
+        <button class="button button-primary" type="submit">Lọc dữ liệu</button>
+    </form>
+
+    <section class="card">
+        <header class="card-header"><div><h2>Danh sách đề xuất</h2><p th:text="${#numbers.formatInteger(requests.totalElements, 1, 'POINT') + ' đề xuất'}">0 đề xuất</p></div><a class="button button-sm" th:href="@{/acquisitions}" th:if="${!#strings.isEmpty(keyword) or selectedStatus != null}">Xóa bộ lọc</a></header>
+        <div class="table-wrap" th:if="${!requests.empty}"><table><thead><tr><th>Đề xuất</th><th>Người lập</th><th>Nhà cung cấp</th><th>Thời gian</th><th>Trạng thái</th><th></th></tr></thead><tbody>
+            <tr th:each="request : ${requests.content}">
+                <td><a class="cell-title" th:href="@{/acquisitions/{id}(id=${request.id})}" th:text="${request.title}">Tên</a><span class="cell-subtitle code" th:text="${request.requestCode}">Mã</span></td>
+                <td th:text="${request.requesterName}">Người lập</td>
+                <td th:text="${request.supplier != null ? request.supplier.name : 'Chưa chọn'}">NCC</td>
+                <td><span th:text="${#temporals.format(request.requestDate, 'dd/MM/yyyy')}">Ngày</span><span class="cell-subtitle" th:text="${request.expectedDate != null ? 'Dự kiến ' + #temporals.format(request.expectedDate, 'dd/MM/yyyy') : 'Chưa có hạn'}">Dự kiến</span></td>
+                <td><span class="badge" th:classappend="${' badge-' + request.status.tone}" th:text="${request.status.label}">Trạng thái</span></td>
+                <td><div class="cell-actions"><a class="button button-sm" th:href="@{/acquisitions/{id}(id=${request.id})}"><i class="bi bi-eye" aria-hidden="true"></i> Chi tiết</a><a class="button button-sm button-ghost" th:if="${request.status.name() == 'DRAFT' and canAcquire}" th:href="@{/acquisitions/{id}/edit(id=${request.id})}"><i class="bi bi-pencil" aria-hidden="true"></i> Sửa</a><form th:if="${canAcquire and (request.status.name() == 'DRAFT' or request.status.name() == 'REJECTED')}" th:action="@{/acquisitions/{id}/delete(id=${request.id})}" method="post" data-confirm="Xóa đề xuất này? Thao tác không thể hoàn tác."><button class="button button-sm button-danger" type="submit"><i class="bi bi-trash3" aria-hidden="true"></i> Xóa</button></form></div></td>
+            </tr>
+        </tbody></table></div>
+        <div class="empty-state" th:if="${requests.empty}"><i class="empty-icon bi bi-box-seam" aria-hidden="true"></i><h3>Không có đề xuất phù hợp</h3><p>Thay đổi bộ lọc hoặc tạo kế hoạch bổ sung tài liệu mới.</p><a class="button" th:href="@{/acquisitions}">Xóa bộ lọc</a></div>
+        <nav class="pagination" aria-label="Phân trang" th:if="${requests.totalPages > 1}"><span th:text="${'Trang ' + (requests.number + 1) + ' / ' + requests.totalPages}">Trang</span><div class="pagination-links"><a class="page-link" th:classappend="${requests.first} ? ' disabled'" th:href="@{/acquisitions(page=${requests.number - 1},size=${requests.size},keyword=${keyword},status=${selectedStatus})}">←</a><span class="page-link" th:text="${requests.number + 1}">1</span><a class="page-link" th:classappend="${requests.last} ? ' disabled'" th:href="@{/acquisitions(page=${requests.number + 1},size=${requests.size},keyword=${keyword},status=${selectedStatus})}">→</a></div></nav>
+    </section>
+</main>
+</html>

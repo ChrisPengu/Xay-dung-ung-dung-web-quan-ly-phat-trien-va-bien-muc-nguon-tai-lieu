@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: docucatalog
+  config:
+    import: optional:file:.env.local[.properties]
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/docucatalog?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Ho_Chi_Minh}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: Asia/Ho_Chi_Minh
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 1
+    baseline-description: Initial schema managed before Flyway
+    validate-on-migrate: true
+    clean-disabled: true
+  thymeleaf:
+    cache: false
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    whitelabel:
+      enabled: false
+
+app:
+  seed-data: ${APP_SEED_DATA:true}

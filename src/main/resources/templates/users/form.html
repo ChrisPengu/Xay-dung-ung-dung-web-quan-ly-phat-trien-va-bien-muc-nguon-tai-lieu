@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(${editing ? 'Sửa tài khoản' : 'Thêm tài khoản'}, 'users', ~{::main})}">
+<main>
+    <header class="page-heading">
+        <div><span class="eyebrow">Quản trị hệ thống</span><h1 th:text="${editing ? 'Sửa tài khoản' : 'Thêm tài khoản'}">Tài khoản</h1><p>Mỗi nhân sự chỉ được cấp quyền đúng với nhiệm vụ đang phụ trách.</p></div>
+        <div class="heading-actions"><a class="button" th:href="@{/users}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Danh sách</a></div>
+    </header>
+
+    <section class="card">
+        <header class="card-header"><div><h2>Thông tin đăng nhập</h2><p th:text="${editing ? 'Để trống mật khẩu nếu không muốn thay đổi.' : 'Mật khẩu tối thiểu 8 ký tự.'}">Hướng dẫn</p></div></header>
+        <form class="card-body" th:object="${userForm}" th:action="${editing} ? @{/users/{id}(id=${userForm.id})} : @{/users}" method="post">
+            <div class="form-errors" th:if="${#fields.hasGlobalErrors()}" role="alert"><p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Lỗi</p></div>
+            <div class="form-grid">
+                <div class="field"><label class="required" for="username">Tên đăng nhập</label><input class="input" id="username" th:field="*{username}" autocomplete="off" th:classappend="${#fields.hasErrors('username')} ? ' input-invalid'"><span class="field-error" th:errors="*{username}">Lỗi</span></div>
+                <div class="field"><label class="required" for="fullName">Họ và tên</label><input class="input" id="fullName" th:field="*{fullName}" th:classappend="${#fields.hasErrors('fullName')} ? ' input-invalid'"><span class="field-error" th:errors="*{fullName}">Lỗi</span></div>
+                <div class="field"><label for="email">Email</label><input class="input" id="email" type="email" th:field="*{email}" autocomplete="off" th:classappend="${#fields.hasErrors('email')} ? ' input-invalid'"><span class="field-error" th:errors="*{email}">Lỗi</span></div>
+                <div class="field"><label class="required" for="role">Vai trò</label><select class="select" id="role" th:field="*{role}"><option value="">Chọn vai trò</option><option th:each="item : ${roles}" th:value="${item}" th:text="${item.label}">Vai trò</option></select><span class="field-error" th:errors="*{role}">Lỗi</span></div>
+                <div class="field full"><label th:classappend="${!editing} ? 'required'" for="userPassword" th:text="${editing ? 'Mật khẩu mới (không bắt buộc)' : 'Mật khẩu'}">Mật khẩu</label><input class="input" id="userPassword" type="password" th:field="*{password}" autocomplete="new-password" th:classappend="${#fields.hasErrors('password')} ? ' input-invalid'"><span class="field-error" th:errors="*{password}">Lỗi</span></div>
+                <label class="check-option full"><input type="checkbox" th:field="*{active}"> Cho phép tài khoản đăng nhập</label>
+            </div>
+            <div class="form-actions"><a class="button" th:href="@{/users}">Hủy</a><button class="button button-primary" type="submit"><i class="bi bi-check-lg" aria-hidden="true"></i> <span th:text="${editing ? 'Lưu thay đổi' : 'Tạo tài khoản'}">Lưu</span></button></div>
+        </form>
+    </section>
+</main>
+</html>

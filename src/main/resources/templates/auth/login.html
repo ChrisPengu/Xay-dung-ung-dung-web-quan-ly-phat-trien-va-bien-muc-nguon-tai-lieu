@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Đăng nhập DocuCatalog">
+    <title>Đăng nhập · DocuCatalog</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<main class="login-page">
+    <section class="login-panel">
+        <div class="login-card">
+            <div class="login-brand">
+                <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+                <span><strong>DocuCatalog</strong><small>Thư viện số</small></span>
+            </div>
+            <span class="eyebrow">Chào mừng trở lại</span>
+            <h1>Đăng nhập</h1>
+            <p class="login-intro">Truy cập không gian quản lý nguồn tài liệu của thư viện.</p>
+            <div class="login-alert" th:if="${param.error}" role="alert">Tên đăng nhập hoặc mật khẩu chưa chính xác.</div>
+            <div class="login-alert success" th:if="${param.logout}" role="status">Bạn đã đăng xuất an toàn.</div>
+            <div class="login-alert success" th:if="${param.passwordChanged}" role="status">Đổi mật khẩu thành công. Vui lòng đăng nhập lại.</div>
+            <form class="login-form" th:action="@{/login}" method="post">
+                <div class="field">
+                    <label class="required" for="username">Tên đăng nhập</label>
+                    <input class="input" id="username" name="username" autocomplete="username" autofocus required placeholder="Nhập tên đăng nhập">
+                </div>
+                <div class="field">
+                    <label class="required" for="password">Mật khẩu</label>
+                    <div class="password-wrap">
+                        <input class="input" id="password" name="password" type="password" autocomplete="current-password" required placeholder="Nhập mật khẩu">
+                        <button class="password-toggle" type="button" data-password-toggle aria-label="Hiện mật khẩu">Hiện</button>
+                    </div>
+                </div>
+                <button class="button button-primary" type="submit">Đăng nhập <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+            </form>
+            <div class="demo-accounts" th:if="${showDemoAccounts}">
+                <strong>Tài khoản trình diễn:</strong><br>
+                Quản trị <code>admin / admin123</code> · Biên mục <code>cataloger / catalog123</code><br>
+                Bổ sung <code>acquisition / acq123</code>
+            </div>
+        </div>
+    </section>
+    <section class="login-visual" aria-hidden="true">
+        <div class="visual-grid"></div><div class="book-shape"></div>
+        <div class="visual-content">
+            <span class="visual-kicker">Tri thức được tổ chức</span>
+            <blockquote>Mỗi tài liệu đúng chỗ, mỗi nguồn lực đúng lúc.</blockquote>
+            <p>Từ lựa chọn, phê duyệt đến biên mục và nhập kho — một quy trình liền mạch cho nguồn tài liệu của bạn.</p>
+        </div>
+    </section>
+</main>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>
