@@ -28,6 +28,18 @@ public class UserAccount extends BaseEntity {
     @Column(unique = true, length = 150)
     private String email;
 
+    @Column(length = 100)
+    private String department;
+
+    @Column(length = 20)
+    private String phone;
+
+    @Column(length = 500)
+    private String bio;
+
+    @Column(nullable = false, length = 20)
+    private String avatarTheme = "TEAL";
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private UserRole role;

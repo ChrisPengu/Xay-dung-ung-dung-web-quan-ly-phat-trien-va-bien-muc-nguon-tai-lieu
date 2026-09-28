@@ -9,6 +9,7 @@ import vn.edu.docucatalog.domain.UserRole;
 import vn.edu.docucatalog.repository.UserAccountRepository;
 import vn.edu.docucatalog.web.form.PasswordChangeForm;
 import vn.edu.docucatalog.web.form.UserAccountForm;
+import vn.edu.docucatalog.web.form.UserProfileForm;
 
 import java.util.List;
 import java.util.Locale;
@@ -17,6 +18,8 @@ import java.util.Locale;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserAccountService {
+    public static final List<String> PROFILE_THEMES = List.of("TEAL", "BLUE", "VIOLET", "AMBER", "ROSE");
+
     private final UserAccountRepository repository;
     private final PasswordEncoder passwordEncoder;
 
@@ -57,7 +60,7 @@ public class UserAccountService {
 
         account.setUsername(form.getUsername().trim().toLowerCase(Locale.ROOT));
         account.setFullName(form.getFullName().trim());
-        account.setEmail(trimToNull(form.getEmail()));
+        account.setEmail(normalizeEmail(form.getEmail()));
         account.setRole(form.getRole());
         account.setActive(form.isActive());
         if (form.getPassword() != null && !form.getPassword().isBlank()) {
@@ -91,6 +94,36 @@ public class UserAccountService {
         account.setPassword(passwordEncoder.encode(form.getNewPassword()));
     }
 
+    public UserProfileForm toProfileForm(UserAccount account) {
+        UserProfileForm form = new UserProfileForm();
+        form.setFullName(account.getFullName());
+        form.setEmail(account.getEmail());
+        form.setDepartment(account.getDepartment());
+        form.setPhone(account.getPhone());
+        form.setBio(account.getBio());
+        form.setAvatarTheme(account.getAvatarTheme());
+        return form;
+    }
+
+    @Transactional
+    public UserAccount updateProfile(Long userId, UserProfileForm form) {
+        UserAccount account = get(userId);
+        String email = normalizeEmail(form.getEmail());
+        if (email != null && repository.existsByEmailIgnoreCaseAndIdNot(email, userId)) {
+            throw new BusinessException("Email đã được tài khoản khác sử dụng");
+        }
+        if (!PROFILE_THEMES.contains(form.getAvatarTheme())) {
+            throw new BusinessException("Màu đại diện không hợp lệ");
+        }
+        account.setFullName(form.getFullName().trim());
+        account.setEmail(email);
+        account.setDepartment(trimToNull(form.getDepartment()));
+        account.setPhone(trimToNull(form.getPhone()));
+        account.setBio(trimToNull(form.getBio()));
+        account.setAvatarTheme(form.getAvatarTheme());
+        return account;
+    }
+
     private void validateUnique(UserAccountForm form) {
         Long id = form.getId();
         String username = form.getUsername().trim();
@@ -99,7 +132,7 @@ public class UserAccountService {
                 : repository.existsByUsernameIgnoreCaseAndIdNot(username, id);
         if (usernameExists) throw new BusinessException("Tên đăng nhập đã tồn tại");
 
-        String email = trimToNull(form.getEmail());
+        String email = normalizeEmail(form.getEmail());
         if (email != null) {
             boolean emailExists = id == null
                     ? repository.existsByEmailIgnoreCase(email)
@@ -116,7 +149,12 @@ public class UserAccountService {
         }
     }
 
+    private String normalizeEmail(String value) {
+        String normalized = trimToNull(value);
+        return normalized == null ? null : normalized.toLowerCase(Locale.ROOT);
+    }
+
     private String trimToNull(String value) {
-        return value == null || value.isBlank() ? null : value.trim().toLowerCase(Locale.ROOT);
+        return value == null || value.isBlank() ? null : value.trim();
     }
 }

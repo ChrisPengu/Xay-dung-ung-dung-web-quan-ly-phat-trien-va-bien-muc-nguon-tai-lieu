@@ -12,7 +12,7 @@
             <table>
                 <thead><tr><th>Người dùng</th><th>Tên đăng nhập</th><th>Vai trò</th><th>Trạng thái</th><th><span class="sr-only">Thao tác</span></th></tr></thead>
                 <tbody><tr th:each="user : ${users}">
-                    <td><span class="cell-title" th:text="${user.fullName}">Họ tên</span><span class="cell-subtitle" th:text="${user.email ?: 'Chưa có email'}">Email</span></td>
+                    <td><div class="user-list-identity"><span class="avatar" th:classappend="${' avatar-' + #strings.toLowerCase(user.avatarTheme)}" th:text="${#strings.substring(user.fullName, 0, 1)}">A</span><span><span class="cell-title" th:text="${user.fullName}">Họ tên</span><span class="cell-subtitle" th:text="${user.department != null ? user.department : (user.email != null ? user.email : 'Chưa cập nhật hồ sơ')}">Đơn vị</span></span></div></td>
                     <td><span class="code" th:text="${user.username}">username</span><span class="cell-subtitle" th:if="${user.id == currentUser.id}">Tài khoản của bạn</span></td>
                     <td th:text="${user.role.label}">Vai trò</td>
                     <td><span class="badge" th:classappend="${user.active ? ' badge-success' : ' badge-neutral'}" th:text="${user.active ? 'Đang hoạt động' : 'Đã vô hiệu hóa'}">Trạng thái</span></td>

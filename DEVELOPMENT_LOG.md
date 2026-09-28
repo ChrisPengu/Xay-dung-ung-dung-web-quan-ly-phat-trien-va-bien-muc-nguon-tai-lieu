@@ -16,6 +16,7 @@ Xây dựng ứng dụng web quản lý phát triển và biên mục nguồn t�
 | 6 | Xác minh và bàn giao | Build/test thành công, README hướng dẫn đầy đủ | Hoàn thành |
 | 7 | MySQL cục bộ và quản lý phiên bản schema | MySQL thật chạy an toàn, Flyway quản lý schema, smoke test thành công | Hoàn thành |
 | 8 | Hoàn thiện nghiệp vụ thực tế | CRUD biên mục/bản ấn phẩm, quản trị tài khoản, kiểm soát xóa và kiểm thử hồi quy | Hoàn thành |
+| 9 | Hiện đại hóa UI và hồ sơ cá nhân | Theme sáng/tối, VFX nhẹ, UX biểu mẫu, hồ sơ tự phục vụ và kiểm thử xuyên phiên | Hoàn thành |
 
 ## 3. Phạm vi chức năng
 
@@ -28,6 +29,7 @@ Xây dựng ứng dụng web quản lý phát triển và biên mục nguồn t�
 - Khi hoàn tất đề xuất, hệ thống tự tạo đúng số lượng bản ấn phẩm và mã đăng ký cá biệt không trùng.
 - Tìm kiếm, lọc, phân trang, kiểm tra dữ liệu đầu vào và thông báo kết quả.
 - Quản trị người dùng, phân vai trò, kích hoạt/vô hiệu hóa và tự đổi mật khẩu.
+- Hồ sơ tự phục vụ với thông tin liên hệ, giới thiệu ngắn, màu đại diện và chỉ báo mức độ hoàn thiện.
 
 ## 4. Quyết định kỹ thuật
 
@@ -41,6 +43,8 @@ Xây dựng ứng dụng web quản lý phát triển và biên mục nguồn t�
 - **2026-09-28:** Tách biểu ghi thư mục và bản ấn phẩm theo mô hình Instance/Item của FOLIO và cách tổ chức bibliographic record/items của Koha; một biểu ghi có thể có nhiều bản vật lý độc lập.
 - **2026-09-28:** Không cho xóa biểu ghi còn bản ấn phẩm hoặc còn tham chiếu trong đề xuất; không cho xóa bản đang mượn. Đây là ràng buộc bảo toàn lịch sử thay cho xóa dây chuyền.
 - **2026-09-28:** Quản lý nhân sự bằng vô hiệu hóa tài khoản thay vì xóa; chặn tự vô hiệu hóa/tự hạ quyền và chặn loại bỏ quản trị viên hoạt động cuối cùng.
+- **2026-09-28:** Dùng lớp token ngữ nghĩa cho theme sáng/tối; VFX chỉ là một lớp Canvas không bắt sự kiện, giới hạn số hạt/DPR, dừng khi tab ẩn và tôn trọng `prefers-reduced-motion`.
+- **2026-09-28:** Hồ sơ cá nhân được tách thành form model có validation; sau khi lưu, principal của phiên hiện tại được làm mới để tên và màu đại diện đổi ngay trên toàn layout.
 
 ## 5. Mô hình dữ liệu dự kiến
 
@@ -153,6 +157,20 @@ Phiên bản hiện tại đáp ứng phạm vi MVP đã xác định và có th
 - Smoke test artefact với MySQL 8.4 thật: đăng nhập qua CSRF thành công; `/dashboard`, `/documents`, `/users` đều trả HTTP 200; HTML biên mục có đủ Sửa, Sao chép và Xóa, CSS cục bộ được liên kết đúng.
 - Kiểm tra ma trận quyền qua HTTP: `CATALOGER` mở trang tạo biểu ghi nhưng nhận 403 ở quản trị người dùng; `ACQUISITION` mở trang tạo đề xuất nhưng nhận 403 ở trang tạo biểu ghi.
 - `mvnw.cmd clean package` cuối cùng hoàn tất lúc 05:48 ngày 2026-09-28: **BUILD SUCCESS**; JAR 65.024.214 byte được khởi động với MySQL và đang phục vụ tại `http://localhost:8080`.
+
+### 2026-09-28 — hiện đại hóa UI, UX và hồ sơ tài khoản
+
+- Áp dụng hệ token ngữ nghĩa cho theme sáng/tối, giữ font hệ thống và toàn bộ asset nội bộ; thêm `DESIGN_SYSTEM.md` để ghi quy ước component, responsive, chuyển động và accessibility.
+- Thiết kế lại dashboard, topbar, sidebar, trang đăng nhập, thẻ, bảng, nút và biểu mẫu; trạng thái điều hướng có `aria-current`, vùng tương tác chính tối thiểu 44px và focus ring rõ ràng.
+- Thêm theme sáng/tối theo hệ điều hành hoặc lựa chọn lưu trong `localStorage`; cập nhật `theme-color` và icon mà không gây nháy theme khi tải trang.
+- Thêm một lớp hạt Canvas nhẹ, giới hạn DPR/số hạt, không bắt sự kiện, dừng khi tab ẩn và hiển thị tĩnh khi người dùng bật `prefers-reduced-motion`.
+- Thay xác nhận xóa bằng dialog truy cập được; bổ sung loading cho submit, tự đóng toast, bộ đếm ký tự, cảnh báo rời form chưa lưu và thước đo độ mạnh mật khẩu có `aria-live`.
+- Bổ sung hồ sơ tự phục vụ gồm họ tên, email, đơn vị, điện thoại, giới thiệu ngắn và năm màu đại diện; hiển thị mức độ hoàn thiện và làm mới principal ngay sau khi lưu.
+- Thêm Flyway `V2__account_profiles.sql`; migration được áp dụng thành công lên MySQL 8.4 thật từ version 1 lên version 2, sau đó Hibernate `validate` thành công.
+- Mở rộng kiểm thử HTTP cho `/account/profile`, asset hiện đại và cập nhật hồ sơ xuyên phiên. Kết quả `mvnw.cmd clean package`: **4 lớp, 7 ca kiểm thử, 0 lỗi, 0 thất bại, 0 bỏ qua**.
+- Smoke test MySQL sau đăng nhập: dashboard, biên mục, bổ sung, quản trị người dùng, hồ sơ, bảo mật, CSS và JavaScript đều trả HTTP 200; các thành phần UX mới có mặt đúng trong HTML.
+- QA trực quan bằng Chrome thật ở dashboard/hồ sơ desktop và viewport mobile 390px. Vòng đầu phát hiện cách chụp headless áp chiều rộng tối thiểu; chụp lại với DPR 2 xác nhận bố cục mobile không tràn ngang. Toàn bộ profile, thư viện và tiến trình QA tạm đã được dọn.
+- JAR cuối có kích thước **65.042.846 byte**, SHA-256 `7D8A0FA3DD798F66C4BB7E231348BAE0D456BB46ED44EAC0806ADF5A14A23543` và đang phục vụ với MySQL tại `http://localhost:8080`.
 
 ## 9. Tài liệu chính thức đã tham khảo
 

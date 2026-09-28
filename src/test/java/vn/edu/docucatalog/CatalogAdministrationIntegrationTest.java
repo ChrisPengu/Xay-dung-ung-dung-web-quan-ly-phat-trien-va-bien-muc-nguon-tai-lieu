@@ -23,6 +23,7 @@ import vn.edu.docucatalog.web.form.CopyForm;
 import vn.edu.docucatalog.web.form.DocumentForm;
 import vn.edu.docucatalog.web.form.PasswordChangeForm;
 import vn.edu.docucatalog.web.form.UserAccountForm;
+import vn.edu.docucatalog.web.form.UserProfileForm;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -111,6 +112,17 @@ class CatalogAdministrationIntegrationTest {
         edit.setPassword("");
         userAccountService.save(edit, "admin");
         assertThat(userRepository.findById(account.getId()).orElseThrow().getPassword()).isEqualTo(originalHash);
+
+        UserProfileForm profile = userAccountService.toProfileForm(account);
+        profile.setFullName("Biên mục viên hồ sơ mới");
+        profile.setDepartment("Trung tâm học liệu");
+        profile.setPhone("090 123 4567");
+        profile.setBio("Phụ trách chuẩn hóa dữ liệu thư mục.");
+        profile.setAvatarTheme("BLUE");
+        userAccountService.updateProfile(account.getId(), profile);
+        assertThat(account.getDepartment()).isEqualTo("Trung tâm học liệu");
+        assertThat(account.getPhone()).isEqualTo("090 123 4567");
+        assertThat(account.getAvatarTheme()).isEqualTo("BLUE");
 
         assertThatThrownBy(() -> userAccountService.setActive(account.getId(), false, "catalog-tester"))
                 .isInstanceOf(BusinessException.class).hasMessageContaining("đang đăng nhập");

@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Đăng nhập DocuCatalog">
+    <meta name="theme-color" content="#102b2b">
     <title>Đăng nhập · DocuCatalog</title>
+    <script>try{const t=localStorage.getItem('docucatalog-theme');document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){document.documentElement.dataset.theme='light'}</script>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css}">
     <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="stylesheet" th:href="@{/css/app-modern.css}">
 </head>
 <body>
+<canvas class="ambient-particles login-particles" data-particles aria-hidden="true"></canvas>
+<button class="topbar-icon-button login-theme-toggle" id="theme-toggle" type="button" aria-label="Chuyển giao diện sáng/tối" title="Chuyển giao diện sáng/tối"><i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i></button>
 <main class="login-page">
     <section class="login-panel">
         <div class="login-card">
@@ -34,7 +39,7 @@
                         <button class="password-toggle" type="button" data-password-toggle aria-label="Hiện mật khẩu">Hiện</button>
                     </div>
                 </div>
-                <button class="button button-primary" type="submit">Đăng nhập <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+                <button class="button button-primary" type="submit" data-loading-label="Đang xác thực…">Đăng nhập <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
             </form>
             <div class="demo-accounts" th:if="${showDemoAccounts}">
                 <strong>Tài khoản trình diễn:</strong><br>

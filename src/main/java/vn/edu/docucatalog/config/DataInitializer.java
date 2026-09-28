@@ -113,6 +113,16 @@ public class DataInitializer implements CommandLineRunner {
         account.setFullName(fullName);
         account.setEmail(email);
         account.setRole(role);
+        account.setDepartment(switch (role) {
+            case ADMIN -> "Quản trị hệ thống";
+            case CATALOGER -> "Phòng Biên mục";
+            case ACQUISITION -> "Phòng Phát triển nguồn";
+        });
+        account.setAvatarTheme(switch (role) {
+            case ADMIN -> "VIOLET";
+            case CATALOGER -> "TEAL";
+            case ACQUISITION -> "AMBER";
+        });
         userRepository.save(account);
     }
 

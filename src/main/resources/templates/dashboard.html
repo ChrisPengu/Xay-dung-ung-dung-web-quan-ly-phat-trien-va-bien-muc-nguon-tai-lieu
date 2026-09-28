@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout('Tổng quan', 'dashboard', ~{::main})}">
 <main>
-    <header class="page-heading">
-        <div><span class="eyebrow">Bức tranh toàn cảnh</span><h1>Tổng quan thư viện</h1><p>Theo dõi biểu ghi, bản ấn phẩm và tiến độ bổ sung nguồn tài liệu.</p></div>
+    <header class="page-heading dashboard-hero">
+        <div><span class="eyebrow"><i class="bi bi-stars" aria-hidden="true"></i> Không gian làm việc</span><h1>Xin chào, <span th:text="${currentUser.fullName}">bạn</span></h1><p>Theo dõi biểu ghi, bản ấn phẩm và tiến độ bổ sung nguồn tài liệu trong một góc nhìn thống nhất.</p></div>
         <div class="heading-actions">
             <a class="button" th:href="@{/acquisitions/new}" th:if="${canAcquire}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Đề xuất bổ sung</a>
             <a class="button button-primary" th:href="@{/documents/new}" th:if="${canCatalog}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Biên mục tài liệu</a>

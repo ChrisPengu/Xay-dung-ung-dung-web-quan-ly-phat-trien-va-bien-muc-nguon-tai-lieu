@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout('Hồ sơ cá nhân', 'account', ~{::main})}">
+<main>
+    <header class="page-heading">
+        <div><span class="eyebrow">Không gian cá nhân</span><h1>Hồ sơ tài khoản</h1><p>Cập nhật thông tin liên hệ và cách bạn xuất hiện trong không gian làm việc.</p></div>
+        <div class="heading-actions"><a class="button" th:href="@{/dashboard}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Tổng quan</a></div>
+    </header>
+
+    <section class="profile-hero card">
+        <div class="profile-identity">
+            <span class="profile-avatar avatar" th:classappend="${' avatar-' + #strings.toLowerCase(account.avatarTheme)}" th:text="${#strings.substring(account.fullName, 0, 1)}">A</span>
+            <div><span class="profile-kicker">Hồ sơ đang hoạt động</span><h2 th:text="${account.fullName}">Người dùng</h2><p><span class="code" th:text="${'@' + account.username}">@username</span><span class="profile-role" th:text="${account.role.label}">Vai trò</span></p></div>
+        </div>
+        <div class="profile-progress" th:attr="aria-label=${'Hồ sơ hoàn thiện ' + profileCompletion + '%'}">
+            <div><span>Mức độ hoàn thiện</span><strong th:text="${profileCompletion + '%'}">80%</strong></div>
+            <div class="progress-track"><span th:style="${'width:' + profileCompletion + '%'}"></span></div>
+            <small th:text="${profileCompletion == 100 ? 'Hồ sơ đã đầy đủ' : 'Bổ sung các trường còn thiếu để đồng nghiệp dễ liên hệ'}">Gợi ý</small>
+        </div>
+    </section>
+
+    <nav class="account-nav" aria-label="Cài đặt tài khoản">
+        <a class="active" th:href="@{/account/profile}" aria-current="page"><i class="bi bi-person" aria-hidden="true"></i> Hồ sơ</a>
+        <a th:href="@{/account/password}"><i class="bi bi-shield-lock" aria-hidden="true"></i> Bảo mật</a>
+    </nav>
+
+    <div class="account-layout">
+        <section class="card">
+            <header class="card-header"><div><h2>Thông tin cá nhân</h2><p>Thông tin này chỉ hiển thị trong hệ thống nội bộ.</p></div><span class="badge badge-success"><i class="bi bi-lock" aria-hidden="true"></i> Nội bộ</span></header>
+            <form class="card-body" th:object="${profileForm}" th:action="@{/account/profile}" method="post" data-guard-unsaved>
+                <div class="form-errors" th:if="${#fields.hasGlobalErrors()}" role="alert" aria-live="assertive"><p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Lỗi</p></div>
+                <fieldset class="form-section">
+                    <legend>Thông tin cơ bản</legend>
+                    <div class="form-grid">
+                        <div class="field"><label class="required" for="fullName">Họ và tên</label><input class="input" id="fullName" th:field="*{fullName}" autocomplete="name" th:classappend="${#fields.hasErrors('fullName')} ? ' input-invalid'" th:attr="aria-invalid=${#fields.hasErrors('fullName')}"><span class="field-error" th:errors="*{fullName}">Lỗi</span></div>
+                        <div class="field"><label for="email">Email công việc</label><input class="input" id="email" type="email" th:field="*{email}" autocomplete="email" th:classappend="${#fields.hasErrors('email')} ? ' input-invalid'" th:attr="aria-invalid=${#fields.hasErrors('email')}"><span class="field-error" th:errors="*{email}">Lỗi</span></div>
+                        <div class="field"><label for="department">Đơn vị công tác</label><input class="input" id="department" th:field="*{department}" autocomplete="organization" placeholder="Ví dụ: Phòng Biên mục" th:classappend="${#fields.hasErrors('department')} ? ' input-invalid'"><span class="field-error" th:errors="*{department}">Lỗi</span></div>
+                        <div class="field"><label for="phone">Số điện thoại</label><input class="input" id="phone" type="tel" th:field="*{phone}" autocomplete="tel" inputmode="tel" placeholder="Ví dụ: 090 123 4567" th:classappend="${#fields.hasErrors('phone')} ? ' input-invalid'"><span class="field-error" th:errors="*{phone}">Lỗi</span></div>
+                        <div class="field full"><label for="bio">Giới thiệu ngắn</label><textarea class="textarea" id="bio" th:field="*{bio}" maxlength="500" rows="4" placeholder="Vai trò, chuyên môn hoặc phạm vi công việc của bạn…"></textarea><span class="field-hint"><span data-character-count="bio">0</span>/500 ký tự</span><span class="field-error" th:errors="*{bio}">Lỗi</span></div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-section">
+                    <legend>Màu đại diện</legend>
+                    <p class="field-hint">Chọn màu giúp nhận diện tài khoản của bạn trên thanh điều hướng.</p>
+                    <div class="accent-picker">
+                        <label class="accent-option" th:each="theme : ${profileThemes}" th:classappend="${' accent-' + #strings.toLowerCase(theme)}"><input type="radio" th:field="*{avatarTheme}" th:value="${theme}"><span aria-hidden="true"><i class="bi bi-check-lg"></i></span><small th:text="${theme == 'TEAL' ? 'Ngọc lam' : theme == 'BLUE' ? 'Lam' : theme == 'VIOLET' ? 'Tím' : theme == 'AMBER' ? 'Hổ phách' : 'Hồng'}">Màu</small></label>
+                    </div>
+                    <span class="field-error" th:errors="*{avatarTheme}">Lỗi</span>
+                </fieldset>
+
+                <div class="form-actions"><a class="button" th:href="@{/dashboard}">Hủy</a><button class="button button-primary" type="submit" data-loading-label="Đang lưu hồ sơ…"><i class="bi bi-check-lg" aria-hidden="true"></i> Lưu hồ sơ</button></div>
+            </form>
+        </section>
+
+        <aside class="profile-side stack">
+            <section class="card"><header class="card-header"><div><h2>Thông tin tài khoản</h2><p>Dữ liệu do hệ thống quản lý</p></div><i class="bi bi-person-badge" aria-hidden="true"></i></header><div class="card-body"><dl class="definition-list"><div class="definition-row"><dt>Tên đăng nhập</dt><dd class="code" th:text="${account.username}">username</dd></div><div class="definition-row"><dt>Vai trò</dt><dd th:text="${account.role.label}">Vai trò</dd></div><div class="definition-row"><dt>Trạng thái</dt><dd><span class="badge badge-success">Đang hoạt động</span></dd></div><div class="definition-row"><dt>Tham gia</dt><dd th:text="${#temporals.format(account.createdAt, 'dd/MM/yyyy')}">Ngày</dd></div><div class="definition-row"><dt>Cập nhật</dt><dd th:text="${#temporals.format(account.updatedAt, 'HH:mm dd/MM/yyyy')}">Ngày</dd></div></dl></div></section>
+            <section class="card security-card"><div class="card-body"><span class="security-icon"><i class="bi bi-shield-check" aria-hidden="true"></i></span><h2>Bảo mật tài khoản</h2><p>Đổi mật khẩu định kỳ và không chia sẻ tài khoản với người khác.</p><a class="button" th:href="@{/account/password}">Mở cài đặt bảo mật <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></section>
+        </aside>
+    </div>
+</main>
+</html>

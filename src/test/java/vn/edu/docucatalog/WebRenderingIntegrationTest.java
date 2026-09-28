@@ -98,7 +98,7 @@ class WebRenderingIntegrationTest {
 
     @Test
     void authenticatedPagesRenderWithoutTemplateErrors() throws Exception {
-        assertPage("/dashboard", "Tổng quan thư viện");
+        assertPage("/dashboard", "Xin chào,");
         assertPage("/documents", "Biên mục tài liệu");
         assertPage("/documents/new", "Biên mục tài liệu mới");
         assertPage("/documents/" + document.getId(), "Biểu ghi kiểm thử giao diện");
@@ -115,12 +115,50 @@ class WebRenderingIntegrationTest {
         assertPage("/references?tab=suppliers", "Nhà cung cấp");
         assertPage("/users", "Quản lý người dùng");
         assertPage("/users/new", "Thêm tài khoản");
+        assertPage("/account/profile", "Hồ sơ tài khoản");
         assertPage("/account/password", "Đổi mật khẩu");
+    }
+
+    @Test
+    void profileUpdateRefreshesTheAuthenticatedSession() throws Exception {
+        HttpResponse<String> profilePage = client.send(
+                HttpRequest.newBuilder(uri("/account/profile")).GET().build(),
+                HttpResponse.BodyHandlers.ofString());
+        Matcher matcher = CSRF.matcher(profilePage.body());
+        assertThat(matcher.find()).as("CSRF token exists in profile form").isTrue();
+
+        String body = "fullName=" + encode("Quản trị viên giao diện")
+                + "&email=" + encode("web-admin@example.test")
+                + "&department=" + encode("Trung tâm học liệu")
+                + "&phone=" + encode("090 123 4567")
+                + "&bio=" + encode("Phụ trách vận hành và chất lượng dữ liệu.")
+                + "&avatarTheme=BLUE&_csrf=" + encode(matcher.group(1));
+        HttpResponse<String> update = client.send(HttpRequest.newBuilder(uri("/account/profile"))
+                        .header("Content-Type", "application/x-www-form-urlencoded")
+                        .POST(HttpRequest.BodyPublishers.ofString(body)).build(),
+                HttpResponse.BodyHandlers.ofString());
+
+        assertThat(update.statusCode()).isEqualTo(302);
+        assertThat(update.headers().firstValue("location"))
+                .hasValue("http://localhost:" + port + "/account/profile");
+
+        HttpResponse<String> refreshed = client.send(
+                HttpRequest.newBuilder(uri("/account/profile")).GET().build(),
+                HttpResponse.BodyHandlers.ofString());
+        assertThat(refreshed.statusCode()).isEqualTo(200);
+        assertThat(refreshed.body())
+                .containsPattern("class=\"topbar-avatar avatar\\s+avatar-blue\"")
+                .contains("<span class=\"topbar-user-text\"><strong>Quản trị viên giao diện</strong>")
+                .contains("Hồ sơ đã đầy đủ");
+        UserAccount saved = userRepository.findByUsernameIgnoreCase("web-admin").orElseThrow();
+        assertThat(saved.getDepartment()).isEqualTo("Trung tâm học liệu");
+        assertThat(saved.getPhone()).isEqualTo("090 123 4567");
     }
 
     @Test
     void stylesheetsAreServedLocallyWithCssContentType() throws Exception {
         assertStylesheet("/css/app.css", ":root");
+        assertStylesheet("/css/app-modern.css", "--particle-rgb");
         assertStylesheet("/webjars/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css", "bootstrap-icons");
     }
 
@@ -149,6 +187,7 @@ class WebRenderingIntegrationTest {
                 .contains("<head>")
                 .contains("/webjars/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css")
                 .contains("/css/app.css")
+                .contains("/css/app-modern.css")
                 .contains("</head>")
                 .doesNotContain("TemplateInputException");
     }
@@ -164,5 +203,9 @@ class WebRenderingIntegrationTest {
 
     private URI uri(String path) {
         return URI.create("http://localhost:" + port + path);
+    }
+
+    private String encode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }

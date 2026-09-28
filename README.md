@@ -12,8 +12,9 @@
 - Quy trình phát triển nguồn: `Bản nháp → Chờ duyệt → Đã duyệt → Hoàn tất` hoặc `Từ chối`.
 - Khi hoàn tất đề xuất, hệ thống tự tạo số lượng bản ấn phẩm tương ứng và mã đăng ký không trùng.
 - Đăng nhập, phân quyền, BCrypt, CSRF, validation phía server và thông báo nghiệp vụ.
-- Quản trị tài khoản: tạo, sửa, phân vai trò, kích hoạt/vô hiệu hóa; mọi người dùng có thể tự đổi mật khẩu.
-- Giao diện responsive, hỗ trợ bàn phím và không phụ thuộc CDN.
+- Quản trị tài khoản: tạo, sửa, phân vai trò, kích hoạt/vô hiệu hóa; mỗi người dùng có hồ sơ cá nhân, thông tin liên hệ, màu đại diện và trang đổi mật khẩu.
+- Giao diện responsive sáng/tối, hỗ trợ bàn phím, vùng bấm tối thiểu 44px, trạng thái loading và cảnh báo rời form khi chưa lưu.
+- Lớp hạt nền Canvas nhẹ, tự dừng khi tab bị ẩn và chuyển sang ảnh tĩnh khi hệ điều hành bật giảm chuyển động; không phụ thuộc CDN.
 
 ## Vai trò
 
@@ -147,6 +148,7 @@ Kết nối có thể cấu hình bằng biến môi trường:
 
 - Flyway chạy trước Hibernate ở profile MySQL.
 - Migration ban đầu nằm tại `src/main/resources/db/migration/V1__initial_schema.sql`.
+- Migration hồ sơ tài khoản nằm tại `src/main/resources/db/migration/V2__account_profiles.sql`.
 - Hibernate dùng `ddl-auto=validate`, vì vậy ứng dụng dừng sớm nếu entity và schema không khớp thay vì tự ý sửa cơ sở dữ liệu.
 - Profile `demo` và bộ test dùng H2 với schema tạm, nên Flyway được tắt riêng ở hai môi trường này.
 - Khi thay đổi schema, tạo migration mới theo thứ tự `V2__...sql`, `V3__...sql`; không sửa migration đã được áp dụng.
@@ -173,8 +175,8 @@ Các mật khẩu trên chỉ dành cho trình diễn. Khi triển khai thật, 
 Bộ test dùng H2 ở chế độ tương thích MySQL, không tác động dữ liệu thật. Kiểm thử hiện có:
 
 - Chạy xuyên suốt workflow đề xuất và xác minh số bản ấn phẩm/mã đăng ký được sinh.
-- Đăng nhập qua HTTP với CSRF và render 17 luồng/màn hình Thymeleaf, gồm tạo/sửa/sao chép biểu ghi, sửa bản ấn phẩm, quản trị người dùng, đổi mật khẩu và toàn bộ tab dữ liệu danh mục.
-- Kiểm thử CRUD biên mục, tìm theo số đăng ký cá biệt, chặn xóa bản đang mượn/tài liệu còn bản ấn phẩm, băm và đổi mật khẩu tài khoản.
+- Đăng nhập qua HTTP với CSRF và render 19 luồng/màn hình Thymeleaf, gồm tạo/sửa/sao chép biểu ghi, sửa bản ấn phẩm, quản trị người dùng, hồ sơ, đổi mật khẩu và toàn bộ tab dữ liệu danh mục.
+- Kiểm thử CRUD biên mục, tìm theo số đăng ký cá biệt, chặn xóa bản đang mượn/tài liệu còn bản ấn phẩm, băm/đổi mật khẩu và cập nhật hồ sơ xuyên phiên đăng nhập.
 - Khởi động profile `demo` và xác minh tự nạp đúng tài khoản, tài liệu, bản ấn phẩm và đề xuất mẫu.
 
 Artefact sau build: `target/docucatalog-1.0.0.jar`.
@@ -200,6 +202,7 @@ src/main/resources
 - Icon dùng [Bootstrap Icons 1.13.1](https://icons.getbootstrap.com/) từ dự án chính thức `twbs/icons`, giấy phép MIT.
 - Dependency `org.webjars.npm:bootstrap-icons:1.13.1` đóng gói CSS/font vào artefact; trình duyệt tải từ chính ứng dụng qua `/webjars/**`, không phụ thuộc CDN khi vận hành.
 - Bố cục, design token, responsive CSS và JavaScript tương tác là mã nội bộ tại `src/main/resources/static`.
+- Quy ước token, responsive, chuyển động và accessibility được ghi tại [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md).
 
 ## Quy tắc nghiệp vụ đáng chú ý
 
