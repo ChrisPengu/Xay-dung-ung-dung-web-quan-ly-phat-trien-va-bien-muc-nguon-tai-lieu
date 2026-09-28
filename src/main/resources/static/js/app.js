@@ -173,6 +173,27 @@
         input?.addEventListener('input', update);
         update();
     });
+
+    document.querySelectorAll('[data-avatar-input]').forEach(input => {
+        const preview = document.querySelector('[data-avatar-preview]');
+        const fileName = document.querySelector('[data-avatar-file-name]');
+        let objectUrl = null;
+        input.addEventListener('change', () => {
+            const file = input.files?.[0];
+            if (!file) return;
+            if (fileName) fileName.textContent = `${file.name} · ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+            if (!preview || !file.type.startsWith('image/')) return;
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
+            objectUrl = URL.createObjectURL(file);
+            preview.replaceChildren();
+            const image = document.createElement('img');
+            image.src = objectUrl;
+            image.alt = 'Xem trước ảnh đại diện mới';
+            preview.appendChild(image);
+        });
+        window.addEventListener('beforeunload', () => { if (objectUrl) URL.revokeObjectURL(objectUrl); });
+    });
+
     const firstInvalid = document.querySelector('.input-invalid, [aria-invalid="true"]');
     if (firstInvalid) window.setTimeout(() => firstInvalid.focus(), 80);
 

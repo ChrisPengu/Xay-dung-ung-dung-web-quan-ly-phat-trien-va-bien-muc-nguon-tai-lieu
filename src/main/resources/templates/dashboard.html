@@ -2,7 +2,7 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout('Tổng quan', 'dashboard', ~{::main})}">
 <main>
     <header class="page-heading dashboard-hero">
-        <div><span class="eyebrow"><i class="bi bi-stars" aria-hidden="true"></i> Không gian làm việc</span><h1>Xin chào, <span th:text="${currentUser.fullName}">bạn</span></h1><p>Theo dõi biểu ghi, bản ấn phẩm và tiến độ bổ sung nguồn tài liệu trong một góc nhìn thống nhất.</p></div>
+        <div><span class="eyebrow"><i class="bi bi-stars" aria-hidden="true"></i> Tổng quan hôm nay</span><h1>Xin chào, <span th:text="${currentUser.fullName}">bạn</span>!</h1><p>Mọi biểu ghi, bản ấn phẩm và đề xuất bổ sung bạn cần theo dõi đều ở đây.</p></div>
         <div class="heading-actions">
             <a class="button" th:href="@{/acquisitions/new}" th:if="${canAcquire}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Đề xuất bổ sung</a>
             <a class="button button-primary" th:href="@{/documents/new}" th:if="${canCatalog}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Biên mục tài liệu</a>
@@ -12,7 +12,7 @@
     <section class="stats-grid" aria-label="Chỉ số tổng quan">
         <article class="card stat-card"><i class="stat-icon bi bi-journal-text" aria-hidden="true"></i><span class="stat-label">Tổng biểu ghi</span><strong class="stat-value" th:text="${#numbers.formatInteger(data.totalDocuments, 1, 'POINT')}">0</strong><span class="stat-note" th:text="${data.publishedDocuments + ' đã hoàn tất biên mục'}">0 đã biên mục</span></article>
         <article class="card stat-card"><i class="stat-icon bi bi-collection" aria-hidden="true"></i><span class="stat-label">Bản ấn phẩm</span><strong class="stat-value" th:text="${#numbers.formatInteger(data.totalCopies, 1, 'POINT')}">0</strong><span class="stat-note" th:text="${data.availableCopies + ' bản sẵn sàng'}">0 sẵn sàng</span></article>
-        <article class="card stat-card accent"><i class="stat-icon bi bi-hourglass-split" aria-hidden="true"></i><span class="stat-label">Đề xuất chờ duyệt</span><strong class="stat-value" th:text="${data.pendingRequests}">0</strong><span class="stat-note">Cần quản trị viên xử lý</span></article>
+        <article class="card stat-card accent"><i class="stat-icon bi bi-hourglass-split" aria-hidden="true"></i><span class="stat-label">Đề xuất chờ duyệt</span><strong class="stat-value" th:text="${data.pendingRequests}">0</strong><span class="stat-note">Đang đợi quản trị viên xem</span></article>
         <article class="card stat-card accent"><i class="stat-icon bi bi-cash-stack" aria-hidden="true"></i><span class="stat-label">Ngân sách đã nhập</span><strong class="stat-value" th:text="${#numbers.formatDecimal(data.completedBudget, 0, 'POINT', 0, 'COMMA')}">0</strong><span class="stat-note">VNĐ từ đề xuất hoàn tất</span></article>
     </section>
 

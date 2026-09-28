@@ -21,7 +21,7 @@
             <span><strong>DocuCatalog</strong><small>Thư viện số</small></span>
         </div>
         <nav class="main-nav">
-            <p class="nav-label">Không gian làm việc</p>
+            <p class="nav-label">Công việc hôm nay</p>
             <a th:href="@{/dashboard}" th:classappend="${activeMenu == 'dashboard'} ? ' active'" th:attr="aria-current=${activeMenu == 'dashboard' ? 'page' : null}">
                 <i class="nav-icon bi bi-grid-1x2" aria-hidden="true"></i><span>Tổng quan</span>
             </a>
@@ -40,7 +40,7 @@
         </nav>
         <div class="sidebar-footer">
             <a class="user-card" th:href="@{/account/profile}" th:classappend="${activeMenu == 'account'} ? ' active'" aria-label="Mở hồ sơ cá nhân">
-                <span class="avatar" th:classappend="${' avatar-' + #strings.toLowerCase(currentUser.avatarTheme)}" th:text="${#strings.substring(currentUser.fullName, 0, 1)}">A</span>
+                <span class="avatar" th:classappend="${' avatar-' + #strings.toLowerCase(currentUser.avatarTheme)}"><img th:if="${currentUser.avatarFileName != null}" th:src="@{/media/avatars/{file}(file=${currentUser.avatarFileName})}" alt=""><span th:unless="${currentUser.avatarFileName != null}" th:text="${#strings.substring(currentUser.fullName, 0, 1)}">A</span></span>
                 <span class="user-meta">
                     <strong th:text="${currentUser.fullName}">Người dùng</strong>
                     <small th:text="${currentUser.roleLabel}">Vai trò</small>
@@ -62,7 +62,7 @@
                 <button class="topbar-icon-button" id="theme-toggle" type="button" aria-label="Chuyển giao diện sáng/tối" title="Chuyển giao diện sáng/tối"><i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i></button>
                 <a class="topbar-profile" th:href="@{/account/profile}" aria-label="Mở hồ sơ cá nhân">
                     <span class="status-dot" aria-hidden="true"></span>
-                    <span class="topbar-avatar avatar" th:classappend="${' avatar-' + #strings.toLowerCase(currentUser.avatarTheme)}" th:text="${#strings.substring(currentUser.fullName, 0, 1)}">A</span>
+                    <span class="topbar-avatar avatar" th:classappend="${' avatar-' + #strings.toLowerCase(currentUser.avatarTheme)}"><img th:if="${currentUser.avatarFileName != null}" th:src="@{/media/avatars/{file}(file=${currentUser.avatarFileName})}" alt=""><span th:unless="${currentUser.avatarFileName != null}" th:text="${#strings.substring(currentUser.fullName, 0, 1)}">A</span></span>
                     <span class="topbar-user-text"><strong th:text="${currentUser.fullName}">Người dùng</strong><small th:text="${currentUser.roleLabel}">Vai trò</small></span>
                     <i class="bi bi-chevron-down" aria-hidden="true"></i>
                 </a>
@@ -80,7 +80,7 @@
             </div>
             <th:block th:replace="${content}"/>
         </main>
-        <footer class="app-footer"><span>DocuCatalog · Quản lý nguồn tài liệu</span><span>Spring Boot &amp; Thymeleaf</span></footer>
+        <footer class="app-footer"><span>DocuCatalog · Cùng chăm sóc kho tri thức</span><span>Spring Boot &amp; Thymeleaf</span></footer>
     </div>
 </div>
 <dialog class="confirm-dialog" id="confirm-dialog" aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-message">

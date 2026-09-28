@@ -12,12 +12,12 @@
                 <header class="card-header"><div><h2>Thông tin thư mục</h2><p>Mô tả nhận dạng và xuất bản</p></div></header>
                 <div class="card-body"><dl class="definition-list">
                     <div class="definition-row"><dt>Tác giả</dt><dd><span th:if="${document.authors.empty}">Chưa xác định</span><span th:each="author, iter : ${document.authors}" th:text="${author.name + (!iter.last ? ', ' : '')}">Tác giả</span></dd></div>
-                    <div class="definition-row"><dt>ISBN</dt><dd class="code" th:text="${document.isbn ?: '—'}">ISBN</dd></div>
+                    <div class="definition-row"><dt>ISBN</dt><dd class="code" th:text="${document.isbn ?: '-'}">ISBN</dd></div>
                     <div class="definition-row"><dt>Xuất bản</dt><dd th:text="${(document.publisher != null ? document.publisher.name : 'Chưa rõ NXB') + (document.publicationYear != null ? ', ' + document.publicationYear : '')}">Xuất bản</dd></div>
-                    <div class="definition-row"><dt>Lần xuất bản</dt><dd th:text="${document.edition ?: '—'}">Ấn bản</dd></div>
-                    <div class="definition-row"><dt>Mô tả vật lý</dt><dd th:text="${document.physicalDescription ?: '—'}">Mô tả</dd></div>
-                    <div class="definition-row"><dt>Số phân loại</dt><dd class="code" th:text="${document.classificationNumber ?: '—'}">Số</dd></div>
-                    <div class="definition-row"><dt>Ký hiệu xếp giá</dt><dd class="code" th:text="${document.callNumber ?: '—'}">Ký hiệu</dd></div>
+                    <div class="definition-row"><dt>Lần xuất bản</dt><dd th:text="${document.edition ?: '-'}">Ấn bản</dd></div>
+                    <div class="definition-row"><dt>Mô tả vật lý</dt><dd th:text="${document.physicalDescription ?: '-'}">Mô tả</dd></div>
+                    <div class="definition-row"><dt>Số phân loại</dt><dd class="code" th:text="${document.classificationNumber ?: '-'}">Số</dd></div>
+                    <div class="definition-row"><dt>Ký hiệu xếp giá</dt><dd class="code" th:text="${document.callNumber ?: '-'}">Ký hiệu</dd></div>
                 </dl></div>
             </section>
             <section class="card" th:if="${document.summary != null or document.keywords != null}">

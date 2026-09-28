@@ -81,8 +81,11 @@ public class UserAccountController {
     public String setActive(@PathVariable Long id, @RequestParam boolean active,
                             Authentication authentication, RedirectAttributes redirect) {
         try {
+            boolean pending = !service.get(id).isApproved();
             service.setActive(id, active, authentication.getName());
-            redirect.addFlashAttribute("success", active ? "Đã kích hoạt tài khoản." : "Đã vô hiệu hóa tài khoản.");
+            redirect.addFlashAttribute("success", active
+                    ? (pending ? "Đã duyệt tài khoản. Người dùng có thể đăng nhập ngay." : "Tài khoản đã được mở lại.")
+                    : "Tài khoản đã được tạm khóa.");
         } catch (BusinessException ex) {
             redirect.addFlashAttribute("error", ex.getMessage());
         }
@@ -93,6 +96,7 @@ public class UserAccountController {
         model.addAttribute("userForm", form);
         model.addAttribute("roles", UserRole.values());
         model.addAttribute("editing", editing);
+        model.addAttribute("pendingAccount", editing && form.getId() != null && !service.get(form.getId()).isApproved());
         return "users/form";
     }
 }

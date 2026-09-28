@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Đăng nhập DocuCatalog">
+    <meta name="description" content="Đăng nhập vào không gian làm việc DocuCatalog">
     <meta name="theme-color" content="#102b2b">
     <title>Đăng nhập · DocuCatalog</title>
     <script>try{const t=localStorage.getItem('docucatalog-theme');document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){document.documentElement.dataset.theme='light'}</script>
@@ -21,12 +21,13 @@
                 <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
                 <span><strong>DocuCatalog</strong><small>Thư viện số</small></span>
             </div>
-            <span class="eyebrow">Chào mừng trở lại</span>
-            <h1>Đăng nhập</h1>
-            <p class="login-intro">Truy cập không gian quản lý nguồn tài liệu của thư viện.</p>
-            <div class="login-alert" th:if="${param.error}" role="alert">Tên đăng nhập hoặc mật khẩu chưa chính xác.</div>
-            <div class="login-alert success" th:if="${param.logout}" role="status">Bạn đã đăng xuất an toàn.</div>
-            <div class="login-alert success" th:if="${param.passwordChanged}" role="status">Đổi mật khẩu thành công. Vui lòng đăng nhập lại.</div>
+            <span class="eyebrow">Rất vui được gặp lại bạn</span>
+            <h1>Mời bạn đăng nhập</h1>
+            <p class="login-intro">Đăng nhập để tiếp tục công việc hôm nay.</p>
+            <div class="login-alert" th:if="${param.error}" role="alert">Thông tin đăng nhập chưa đúng hoặc tài khoản vẫn đang chờ duyệt.</div>
+            <div class="login-alert success" th:if="${param.logout}" role="status">Bạn đã đăng xuất. Hẹn gặp lại nhé!</div>
+            <div class="login-alert success" th:if="${param.passwordChanged}" role="status">Mật khẩu mới đã sẵn sàng. Bạn đăng nhập lại nhé.</div>
+            <div class="login-alert success" th:if="${param.registered}" role="status"><strong th:if="${registeredName}" th:text="${'Cảm ơn ' + registeredName + '! '}">Cảm ơn bạn! </strong>Yêu cầu tạo tài khoản đã được gửi. Quản trị viên sẽ duyệt trước khi bạn đăng nhập.</div>
             <form class="login-form" th:action="@{/login}" method="post">
                 <div class="field">
                     <label class="required" for="username">Tên đăng nhập</label>
@@ -41,6 +42,7 @@
                 </div>
                 <button class="button button-primary" type="submit" data-loading-label="Đang xác thực…">Đăng nhập <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
             </form>
+            <p class="auth-switch">Bạn chưa có tài khoản? <a th:href="@{/register}">Gửi yêu cầu tạo tài khoản</a></p>
             <div class="demo-accounts" th:if="${showDemoAccounts}">
                 <strong>Tài khoản trình diễn:</strong><br>
                 Quản trị <code>admin / admin123</code> · Biên mục <code>cataloger / catalog123</code><br>
@@ -53,7 +55,7 @@
         <div class="visual-content">
             <span class="visual-kicker">Tri thức được tổ chức</span>
             <blockquote>Mỗi tài liệu đúng chỗ, mỗi nguồn lực đúng lúc.</blockquote>
-            <p>Từ lựa chọn, phê duyệt đến biên mục và nhập kho — một quy trình liền mạch cho nguồn tài liệu của bạn.</p>
+            <p>Từ lựa chọn, phê duyệt đến biên mục và nhập kho - mọi việc được nối liền trong một quy trình dễ theo dõi.</p>
         </div>
     </section>
 </main>

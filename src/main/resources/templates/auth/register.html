@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Gửi yêu cầu tạo tài khoản DocuCatalog">
+    <meta name="theme-color" content="#102b2b">
+    <title>Tạo tài khoản · DocuCatalog</title>
+    <script>try{const t=localStorage.getItem('docucatalog-theme');document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){document.documentElement.dataset.theme='light'}</script>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="stylesheet" th:href="@{/css/app-modern.css}">
+</head>
+<body>
+<canvas class="ambient-particles login-particles" data-particles aria-hidden="true"></canvas>
+<button class="topbar-icon-button login-theme-toggle" id="theme-toggle" type="button" aria-label="Chuyển giao diện sáng/tối" title="Chuyển giao diện sáng/tối"><i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i></button>
+<main class="login-page register-page">
+    <section class="login-panel register-panel">
+        <div class="login-card register-card">
+            <a class="login-brand" th:href="@{/login}" aria-label="Quay lại trang đăng nhập">
+                <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+                <span><strong>DocuCatalog</strong><small>Thư viện số</small></span>
+            </a>
+            <span class="eyebrow">Chào mừng bạn</span>
+            <h1>Tạo tài khoản</h1>
+            <p class="login-intro">Cho chúng mình biết một vài thông tin. Quản trị viên sẽ kiểm tra và mở quyền đăng nhập cho bạn.</p>
+
+            <form class="login-form registration-form" th:object="${registrationForm}" th:action="@{/register}" method="post">
+                <div class="form-errors full" th:if="${#fields.hasGlobalErrors()}" role="alert" aria-live="assertive"><p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Có lỗi</p></div>
+                <div class="field"><label class="required" for="fullName">Họ và tên</label><input class="input" id="fullName" th:field="*{fullName}" autocomplete="name" autofocus placeholder="Ví dụ: Nguyễn Minh Anh" th:classappend="${#fields.hasErrors('fullName')} ? ' input-invalid'" th:attr="aria-invalid=${#fields.hasErrors('fullName')}"><span class="field-error" th:errors="*{fullName}">Lỗi</span></div>
+                <div class="field"><label class="required" for="username">Tên đăng nhập</label><input class="input" id="username" th:field="*{username}" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Ví dụ: minhanh" th:classappend="${#fields.hasErrors('username')} ? ' input-invalid'" th:attr="aria-invalid=${#fields.hasErrors('username')}"><span class="field-hint">Dùng chữ không dấu, số, dấu chấm, gạch dưới hoặc gạch ngang.</span><span class="field-error" th:errors="*{username}">Lỗi</span></div>
+                <div class="field"><label class="required" for="email">Email công việc</label><input class="input" id="email" type="email" th:field="*{email}" autocomplete="email" placeholder="ban@thuvien.vn" th:classappend="${#fields.hasErrors('email')} ? ' input-invalid'" th:attr="aria-invalid=${#fields.hasErrors('email')}"><span class="field-error" th:errors="*{email}">Lỗi</span></div>
+                <div class="field"><label for="department">Bộ phận</label><input class="input" id="department" th:field="*{department}" autocomplete="organization" placeholder="Ví dụ: Phòng Biên mục" th:classappend="${#fields.hasErrors('department')} ? ' input-invalid'"><span class="field-error" th:errors="*{department}">Lỗi</span></div>
+                <div class="field full"><label class="required" for="requestedRole">Công việc bạn phụ trách</label><select class="select" id="requestedRole" th:field="*{requestedRole}" th:classappend="${#fields.hasErrors('requestedRole')} ? ' input-invalid'" th:attr="aria-invalid=${#fields.hasErrors('requestedRole')}"><option value="">Chọn công việc phù hợp</option><option th:each="role : ${requestedRoles}" th:value="${role}" th:text="${role.label}">Vai trò</option></select><span class="field-hint">Quản trị viên có thể điều chỉnh quyền khi duyệt yêu cầu.</span><span class="field-error" th:errors="*{requestedRole}">Lỗi</span></div>
+                <div class="field"><label class="required" for="password">Mật khẩu</label><div class="password-wrap"><input class="input" id="password" name="password" type="password" autocomplete="new-password" placeholder="Ít nhất 8 ký tự" th:classappend="${#fields.hasErrors('password')} ? ' input-invalid'"><button class="password-toggle icon-toggle" type="button" data-password-toggle-for="password" aria-label="Hiện mật khẩu"><i class="bi bi-eye" aria-hidden="true"></i></button></div><span class="field-error" th:errors="*{password}">Lỗi</span></div>
+                <div class="field"><label class="required" for="confirmPassword">Nhập lại mật khẩu</label><div class="password-wrap"><input class="input" id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Nhập lại để kiểm tra" th:classappend="${#fields.hasErrors('confirmPassword')} ? ' input-invalid'"><button class="password-toggle icon-toggle" type="button" data-password-toggle-for="confirmPassword" aria-label="Hiện mật khẩu nhập lại"><i class="bi bi-eye" aria-hidden="true"></i></button></div><span class="field-error" th:errors="*{confirmPassword}">Lỗi</span></div>
+                <div class="approval-note full"><i class="bi bi-shield-check" aria-hidden="true"></i><p><strong>Tài khoản sẽ chờ duyệt</strong><span>Đây là hệ thống nội bộ nên tài khoản mới chỉ đăng nhập được sau khi quản trị viên xác nhận.</span></p></div>
+                <button class="button button-primary full" type="submit" data-loading-label="Đang gửi yêu cầu…">Gửi yêu cầu <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+            </form>
+            <p class="auth-switch">Bạn đã có tài khoản? <a th:href="@{/login}">Quay lại đăng nhập</a></p>
+        </div>
+    </section>
+    <section class="login-visual" aria-hidden="true">
+        <div class="visual-grid"></div><div class="book-shape"></div>
+        <div class="visual-content"><span class="visual-kicker">Cùng làm việc tốt hơn</span><blockquote>Một tài khoản riêng, một vai trò rõ ràng.</blockquote><p>Thông tin của bạn giúp đồng nghiệp phối hợp thuận tiện hơn trong từng bước bổ sung và biên mục tài liệu.</p></div>
+    </section>
+</main>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

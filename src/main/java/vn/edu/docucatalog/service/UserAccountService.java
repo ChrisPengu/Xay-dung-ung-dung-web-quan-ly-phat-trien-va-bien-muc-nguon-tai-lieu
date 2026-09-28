@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.docucatalog.domain.UserAccount;
 import vn.edu.docucatalog.domain.UserRole;
 import vn.edu.docucatalog.repository.UserAccountRepository;
 import vn.edu.docucatalog.web.form.PasswordChangeForm;
+import vn.edu.docucatalog.web.form.RegistrationForm;
 import vn.edu.docucatalog.web.form.UserAccountForm;
 import vn.edu.docucatalog.web.form.UserProfileForm;
 
@@ -22,6 +24,7 @@ public class UserAccountService {
 
     private final UserAccountRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final AvatarStorageService avatarStorageService;
 
     public List<UserAccount> findAll() {
         return repository.findAllByOrderByFullNameAsc();
@@ -45,7 +48,7 @@ public class UserAccountService {
 
     @Transactional
     public UserAccount save(UserAccountForm form, String actingUsername) {
-        validateUnique(form);
+        validateUnique(form.getUsername(), form.getEmail(), form.getId());
         boolean creating = form.getId() == null;
         UserAccount account = creating ? new UserAccount() : get(form.getId());
 
@@ -54,7 +57,7 @@ public class UserAccountService {
         }
         if (!creating && account.getUsername().equalsIgnoreCase(actingUsername)
                 && (account.getRole() != form.getRole() || !form.isActive())) {
-            throw new BusinessException("Bạn không thể tự đổi vai trò hoặc vô hiệu hóa tài khoản đang đăng nhập");
+            throw new BusinessException("Bạn không thể tự đổi vai trò hoặc tạm khóa tài khoản đang đăng nhập");
         }
         ensureAdminStillAvailable(account, form.getRole(), form.isActive());
 
@@ -63,6 +66,9 @@ public class UserAccountService {
         account.setEmail(normalizeEmail(form.getEmail()));
         account.setRole(form.getRole());
         account.setActive(form.isActive());
+        if (creating || form.isActive()) {
+            account.setApproved(true);
+        }
         if (form.getPassword() != null && !form.getPassword().isBlank()) {
             account.setPassword(passwordEncoder.encode(form.getPassword()));
         }
@@ -73,10 +79,36 @@ public class UserAccountService {
     public void setActive(Long id, boolean active, String actingUsername) {
         UserAccount account = get(id);
         if (account.getUsername().equalsIgnoreCase(actingUsername)) {
-            throw new BusinessException("Bạn không thể tự vô hiệu hóa tài khoản đang đăng nhập");
+            throw new BusinessException("Bạn không thể tự tạm khóa tài khoản đang đăng nhập");
         }
         ensureAdminStillAvailable(account, account.getRole(), active);
         account.setActive(active);
+        if (active) {
+            account.setApproved(true);
+        }
+    }
+
+    @Transactional
+    public UserAccount register(RegistrationForm form) {
+        if (form.getRequestedRole() == UserRole.ADMIN) {
+            throw new BusinessException("Tài khoản quản trị cần được tạo bởi một quản trị viên đang hoạt động");
+        }
+        if (!form.getPassword().equals(form.getConfirmPassword())) {
+            throw new BusinessException("Hai lần nhập mật khẩu chưa khớp nhau");
+        }
+        validateUnique(form.getUsername(), form.getEmail(), null);
+
+        UserAccount account = new UserAccount();
+        account.setUsername(form.getUsername().trim().toLowerCase(Locale.ROOT));
+        account.setPassword(passwordEncoder.encode(form.getPassword()));
+        account.setFullName(form.getFullName().trim());
+        account.setEmail(normalizeEmail(form.getEmail()));
+        account.setDepartment(trimToNull(form.getDepartment()));
+        account.setRole(form.getRequestedRole());
+        account.setAvatarTheme(form.getRequestedRole() == UserRole.CATALOGER ? "TEAL" : "BLUE");
+        account.setApproved(false);
+        account.setActive(false);
+        return repository.save(account);
     }
 
     @Transactional
@@ -124,15 +156,21 @@ public class UserAccountService {
         return account;
     }
 
-    private void validateUnique(UserAccountForm form) {
-        Long id = form.getId();
-        String username = form.getUsername().trim();
+    @Transactional
+    public UserAccount updateAvatar(Long userId, MultipartFile avatar) {
+        UserAccount account = get(userId);
+        account.setAvatarFileName(avatarStorageService.store(userId, avatar));
+        return account;
+    }
+
+    private void validateUnique(String usernameValue, String emailValue, Long id) {
+        String username = usernameValue.trim();
         boolean usernameExists = id == null
                 ? repository.existsByUsernameIgnoreCase(username)
                 : repository.existsByUsernameIgnoreCaseAndIdNot(username, id);
         if (usernameExists) throw new BusinessException("Tên đăng nhập đã tồn tại");
 
-        String email = normalizeEmail(form.getEmail());
+        String email = normalizeEmail(emailValue);
         if (email != null) {
             boolean emailExists = id == null
                     ? repository.existsByEmailIgnoreCase(email)

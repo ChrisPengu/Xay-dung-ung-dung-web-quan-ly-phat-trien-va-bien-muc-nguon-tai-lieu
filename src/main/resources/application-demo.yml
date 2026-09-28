@@ -18,3 +18,4 @@ spring:
 
 app:
   seed-data: true
+  avatar-storage-dir: ./target/demo-uploads/avatars

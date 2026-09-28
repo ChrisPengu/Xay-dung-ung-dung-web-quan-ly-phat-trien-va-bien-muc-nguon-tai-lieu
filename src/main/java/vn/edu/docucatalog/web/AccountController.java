@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vn.edu.docucatalog.domain.UserAccount;
 import vn.edu.docucatalog.security.CustomUserDetails;
@@ -53,6 +55,20 @@ public class AccountController {
         }
         addProfileOptions(account, model);
         return "account/profile";
+    }
+
+    @PostMapping("/avatar")
+    public String updateAvatar(@RequestParam("avatar") MultipartFile avatar,
+                               Authentication authentication, RedirectAttributes redirect) {
+        try {
+            UserAccount account = currentAccount(authentication);
+            UserAccount saved = service.updateAvatar(account.getId(), avatar);
+            refreshAuthentication(authentication, saved);
+            redirect.addFlashAttribute("success", "Ảnh đại diện mới đã được lưu.");
+        } catch (BusinessException ex) {
+            redirect.addFlashAttribute("error", ex.getMessage());
+        }
+        return "redirect:/account/profile";
     }
 
     @GetMapping("/password")

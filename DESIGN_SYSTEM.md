@@ -32,8 +32,8 @@ Không dùng trực tiếp màu nền/chữ trong component mới. Ưu tiên cá
 
 ## Chuyển động và VFX
 
-- Chuyển cảnh chính dùng khoảng 180–360ms và easing tự nhiên; không dùng hiệu ứng cuộn cưỡng bức.
-- Canvas hạt là lớp trang trí duy nhất, `pointer-events: none`, giới hạn 18–30 hạt và DPR tối đa 1.5.
+- Chuyển cảnh chính dùng khoảng 180-360ms và easing tự nhiên; không dùng hiệu ứng cuộn cưỡng bức.
+- Canvas hạt là lớp trang trí duy nhất, `pointer-events: none`, giới hạn 18-30 hạt và DPR tối đa 1.5.
 - Animation dừng khi tab ẩn. Với `prefers-reduced-motion: reduce`, hạt đứng yên và các animation vào trang/dialog bị tắt.
 
 ## Responsive và accessibility

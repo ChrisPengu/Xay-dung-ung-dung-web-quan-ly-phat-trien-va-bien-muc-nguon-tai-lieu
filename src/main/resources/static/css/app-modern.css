@@ -1,4 +1,4 @@
-/* DocuCatalog modern layer — semantic tokens, adaptive themes and motion */
+/* DocuCatalog modern layer - semantic tokens, adaptive themes and motion */
 :root {
     --ease-out: cubic-bezier(.16, 1, .3, 1);
     --ease-standard: cubic-bezier(.2, .8, .2, 1);
@@ -146,10 +146,13 @@ button, a, input, select, textarea { touch-action: manipulation; }
 .logout-button { min-height: 44px; font-weight: 650; }
 
 .avatar {
+    overflow: hidden;
     color: #fff;
     background: linear-gradient(145deg, #238277, #155e57);
     box-shadow: inset 0 0 0 1px rgb(255 255 255 / .18), 0 8px 20px rgb(5 34 32 / .2);
 }
+.avatar img { width: 100%; height: 100%; display: block; object-fit: cover; }
+.avatar > span { display: grid; place-items: center; width: 100%; height: 100%; }
 .avatar-blue { background: linear-gradient(145deg, #4d87d8, #285caa); }
 .avatar-violet { background: linear-gradient(145deg, #8b6ddd, #6345b6); }
 .avatar-amber { background: linear-gradient(145deg, #dc9b45, #a8641f); }
@@ -404,6 +407,19 @@ tbody tr:hover td { background: color-mix(in srgb, var(--brand-50) 55%, transpar
 .security-list i { color: var(--success); }
 .user-list-identity { display: flex; align-items: center; gap: 11px; min-width: 220px; }
 .user-list-identity .avatar { width: 38px; height: 38px; flex: 0 0 auto; }
+.avatar-upload-card .card-header > i { color: var(--brand-600); font-size: 20px; }
+.avatar-upload-preview { display: flex; align-items: center; gap: 14px; margin-bottom: 17px; }
+.avatar-upload-preview > div { min-width: 0; }
+.avatar-upload-preview strong, .avatar-upload-preview span { display: block; }
+.avatar-upload-preview span { margin-top: 3px; color: var(--ink-500); font-size: 12px; overflow-wrap: anywhere; }
+.file-input { height: auto; padding: 7px; font-size: 12px; }
+.file-input::file-selector-button { min-height: 34px; padding: 7px 11px; margin-right: 10px; color: var(--ink-800); background: var(--card-muted); border: 1px solid var(--line); border-radius: 8px; font: inherit; font-weight: 720; cursor: pointer; }
+.button-block { width: 100%; justify-content: center; }
+.approval-note { display: flex; gap: 11px; padding: 13px 14px; margin-bottom: 18px; color: var(--warning); background: var(--warning-soft); border-radius: 11px; }
+.approval-note > i { margin-top: 2px; }
+.approval-note p { margin: 0; }
+.approval-note strong, .approval-note span { display: block; }
+.approval-note span { margin-top: 2px; color: var(--ink-650); font-size: 12px; line-height: 1.5; }
 
 .confirm-dialog {
     width: min(460px, calc(100vw - 32px));
@@ -429,6 +445,13 @@ tbody tr:hover td { background: color-mix(in srgb, var(--brand-50) 55%, transpar
 .login-card h1 { font-size: 40px; }
 .login-form { gap: 18px; }
 .login-form .button { min-height: 48px; }
+.auth-switch { margin: 19px 0 0; color: var(--ink-500); text-align: center; font-size: 13px; }
+.auth-switch a { color: var(--brand-600); font-weight: 760; }
+.register-card { max-width: 620px; padding-block: 38px; }
+.register-card .login-brand { margin-bottom: 30px; }
+.registration-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.registration-form .full { grid-column: 1 / -1; }
+.register-panel { overflow-y: auto; }
 .login-visual {
     min-height: 100dvh;
     background:
@@ -477,6 +500,8 @@ html[data-theme="dark"] .book-shape { border-color: rgb(255 255 255 / .18); }
     .confirm-dialog-actions { flex-direction: column-reverse; }
     .confirm-dialog-actions .button { width: 100%; }
     .topbar-context span { display: none; }
+    .registration-form { grid-template-columns: 1fr; }
+    .registration-form .full { grid-column: auto; }
 }
 @media (max-width: 430px) {
     .topbar { padding-inline: 12px; }

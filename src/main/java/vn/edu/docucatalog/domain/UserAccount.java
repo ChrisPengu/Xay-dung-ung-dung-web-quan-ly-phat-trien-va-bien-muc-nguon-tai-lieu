@@ -40,10 +40,16 @@ public class UserAccount extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String avatarTheme = "TEAL";
 
+    @Column(length = 120)
+    private String avatarFileName;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private UserRole role;
 
     @Column(nullable = false)
     private boolean active = true;
+
+    @Column(nullable = false)
+    private boolean approved = true;
 }

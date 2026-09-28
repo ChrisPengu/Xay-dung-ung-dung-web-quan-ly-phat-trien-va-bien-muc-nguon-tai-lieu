@@ -2,14 +2,14 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout('Hồ sơ cá nhân', 'account', ~{::main})}">
 <main>
     <header class="page-heading">
-        <div><span class="eyebrow">Không gian cá nhân</span><h1>Hồ sơ tài khoản</h1><p>Cập nhật thông tin liên hệ và cách bạn xuất hiện trong không gian làm việc.</p></div>
+        <div><span class="eyebrow">Góc riêng của bạn</span><h1>Hồ sơ của bạn</h1><p>Giúp đồng nghiệp nhận ra và liên hệ với bạn dễ dàng hơn.</p></div>
         <div class="heading-actions"><a class="button" th:href="@{/dashboard}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Tổng quan</a></div>
     </header>
 
     <section class="profile-hero card">
         <div class="profile-identity">
-            <span class="profile-avatar avatar" th:classappend="${' avatar-' + #strings.toLowerCase(account.avatarTheme)}" th:text="${#strings.substring(account.fullName, 0, 1)}">A</span>
-            <div><span class="profile-kicker">Hồ sơ đang hoạt động</span><h2 th:text="${account.fullName}">Người dùng</h2><p><span class="code" th:text="${'@' + account.username}">@username</span><span class="profile-role" th:text="${account.role.label}">Vai trò</span></p></div>
+            <span class="profile-avatar avatar" th:classappend="${' avatar-' + #strings.toLowerCase(account.avatarTheme)}"><img th:if="${account.avatarFileName != null}" th:src="@{/media/avatars/{file}(file=${account.avatarFileName})}" alt=""><span th:unless="${account.avatarFileName != null}" th:text="${#strings.substring(account.fullName, 0, 1)}">A</span></span>
+            <div><span class="profile-kicker">Đang hoạt động</span><h2 th:text="${account.fullName}">Người dùng</h2><p><span class="code" th:text="${'@' + account.username}">@username</span><span class="profile-role" th:text="${account.role.label}">Vai trò</span></p></div>
         </div>
         <div class="profile-progress" th:attr="aria-label=${'Hồ sơ hoàn thiện ' + profileCompletion + '%'}">
             <div><span>Mức độ hoàn thiện</span><strong th:text="${profileCompletion + '%'}">80%</strong></div>
@@ -25,7 +25,7 @@
 
     <div class="account-layout">
         <section class="card">
-            <header class="card-header"><div><h2>Thông tin cá nhân</h2><p>Thông tin này chỉ hiển thị trong hệ thống nội bộ.</p></div><span class="badge badge-success"><i class="bi bi-lock" aria-hidden="true"></i> Nội bộ</span></header>
+            <header class="card-header"><div><h2>Thông tin liên hệ</h2><p>Chỉ những người đã đăng nhập mới xem được thông tin này.</p></div><span class="badge badge-success"><i class="bi bi-lock" aria-hidden="true"></i> Nội bộ</span></header>
             <form class="card-body" th:object="${profileForm}" th:action="@{/account/profile}" method="post" data-guard-unsaved>
                 <div class="form-errors" th:if="${#fields.hasGlobalErrors()}" role="alert" aria-live="assertive"><p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Lỗi</p></div>
                 <fieldset class="form-section">
@@ -35,7 +35,7 @@
                         <div class="field"><label for="email">Email công việc</label><input class="input" id="email" type="email" th:field="*{email}" autocomplete="email" th:classappend="${#fields.hasErrors('email')} ? ' input-invalid'" th:attr="aria-invalid=${#fields.hasErrors('email')}"><span class="field-error" th:errors="*{email}">Lỗi</span></div>
                         <div class="field"><label for="department">Đơn vị công tác</label><input class="input" id="department" th:field="*{department}" autocomplete="organization" placeholder="Ví dụ: Phòng Biên mục" th:classappend="${#fields.hasErrors('department')} ? ' input-invalid'"><span class="field-error" th:errors="*{department}">Lỗi</span></div>
                         <div class="field"><label for="phone">Số điện thoại</label><input class="input" id="phone" type="tel" th:field="*{phone}" autocomplete="tel" inputmode="tel" placeholder="Ví dụ: 090 123 4567" th:classappend="${#fields.hasErrors('phone')} ? ' input-invalid'"><span class="field-error" th:errors="*{phone}">Lỗi</span></div>
-                        <div class="field full"><label for="bio">Giới thiệu ngắn</label><textarea class="textarea" id="bio" th:field="*{bio}" maxlength="500" rows="4" placeholder="Vai trò, chuyên môn hoặc phạm vi công việc của bạn…"></textarea><span class="field-hint"><span data-character-count="bio">0</span>/500 ký tự</span><span class="field-error" th:errors="*{bio}">Lỗi</span></div>
+                        <div class="field full"><label for="bio">Đôi lời về bạn</label><textarea class="textarea" id="bio" th:field="*{bio}" maxlength="500" rows="4" placeholder="Bạn đang phụ trách công việc gì hoặc có thể hỗ trợ đồng nghiệp ở mảng nào?"></textarea><span class="field-hint"><span data-character-count="bio">0</span>/500 ký tự</span><span class="field-error" th:errors="*{bio}">Lỗi</span></div>
                     </div>
                 </fieldset>
 
@@ -53,6 +53,17 @@
         </section>
 
         <aside class="profile-side stack">
+            <section class="card avatar-upload-card">
+                <header class="card-header"><div><h2>Ảnh đại diện</h2><p>Ảnh vuông, rõ mặt sẽ dễ nhận ra hơn.</p></div><i class="bi bi-camera" aria-hidden="true"></i></header>
+                <form class="card-body" th:action="@{/account/avatar}" method="post" enctype="multipart/form-data">
+                    <div class="avatar-upload-preview">
+                        <span class="profile-avatar avatar" data-avatar-preview th:classappend="${' avatar-' + #strings.toLowerCase(account.avatarTheme)}"><img th:if="${account.avatarFileName != null}" th:src="@{/media/avatars/{file}(file=${account.avatarFileName})}" alt="Ảnh đại diện hiện tại"><span th:unless="${account.avatarFileName != null}" th:text="${#strings.substring(account.fullName, 0, 1)}">A</span></span>
+                        <div><strong>Chọn ảnh của bạn</strong><span data-avatar-file-name aria-live="polite">PNG hoặc JPEG, tối đa 2 MB</span></div>
+                    </div>
+                    <div class="field"><label class="sr-only" for="avatar">Chọn ảnh đại diện mới</label><input class="input file-input" id="avatar" name="avatar" type="file" accept="image/png,image/jpeg" required data-avatar-input aria-describedby="avatar-help"><span class="field-hint" id="avatar-help">Hệ thống sẽ tự cắt ảnh vuông và thu nhỏ vừa vặn.</span></div>
+                    <button class="button button-primary button-block" type="submit" data-loading-label="Đang lưu ảnh…"><i class="bi bi-upload" aria-hidden="true"></i> Lưu ảnh mới</button>
+                </form>
+            </section>
             <section class="card"><header class="card-header"><div><h2>Thông tin tài khoản</h2><p>Dữ liệu do hệ thống quản lý</p></div><i class="bi bi-person-badge" aria-hidden="true"></i></header><div class="card-body"><dl class="definition-list"><div class="definition-row"><dt>Tên đăng nhập</dt><dd class="code" th:text="${account.username}">username</dd></div><div class="definition-row"><dt>Vai trò</dt><dd th:text="${account.role.label}">Vai trò</dd></div><div class="definition-row"><dt>Trạng thái</dt><dd><span class="badge badge-success">Đang hoạt động</span></dd></div><div class="definition-row"><dt>Tham gia</dt><dd th:text="${#temporals.format(account.createdAt, 'dd/MM/yyyy')}">Ngày</dd></div><div class="definition-row"><dt>Cập nhật</dt><dd th:text="${#temporals.format(account.updatedAt, 'HH:mm dd/MM/yyyy')}">Ngày</dd></div></dl></div></section>
             <section class="card security-card"><div class="card-body"><span class="security-icon"><i class="bi bi-shield-check" aria-hidden="true"></i></span><h2>Bảo mật tài khoản</h2><p>Đổi mật khẩu định kỳ và không chia sẻ tài khoản với người khác.</p><a class="button" th:href="@{/account/password}">Mở cài đặt bảo mật <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></section>
         </aside>

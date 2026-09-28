@@ -113,9 +113,9 @@ class WebRenderingIntegrationTest {
         assertPage("/references?tab=authors", "Tác giả");
         assertPage("/references?tab=publishers", "Nhà xuất bản");
         assertPage("/references?tab=suppliers", "Nhà cung cấp");
-        assertPage("/users", "Quản lý người dùng");
-        assertPage("/users/new", "Thêm tài khoản");
-        assertPage("/account/profile", "Hồ sơ tài khoản");
+        assertPage("/users", "Tài khoản và phân quyền");
+        assertPage("/users/new", "Thêm đồng nghiệp");
+        assertPage("/account/profile", "Hồ sơ của bạn");
         assertPage("/account/password", "Đổi mật khẩu");
     }
 

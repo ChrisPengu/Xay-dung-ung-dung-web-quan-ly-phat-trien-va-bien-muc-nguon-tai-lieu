@@ -23,8 +23,8 @@ Xây dựng ứng dụng web quản lý phát triển và biên mục nguồn t�
 - Đăng nhập và phân quyền `ADMIN`, `CATALOGER`, `ACQUISITION`.
 - Dashboard tổng hợp số tài liệu, bản ấn phẩm, đề xuất đang chờ và ngân sách.
 - Quản lý danh mục tác giả, thể loại, nhà xuất bản và nhà cung cấp.
-- Biên mục tài liệu đầy đủ Thêm – Xem – Sửa – Xóa, sao chép biểu ghi, tìm theo mã/ISBN/tác giả/số đăng ký cá biệt.
-- Quản lý từng bản ấn phẩm đầy đủ Thêm – Sửa – Xóa bằng số đăng ký cá biệt, vị trí, tình trạng và trạng thái lưu thông.
+- Biên mục tài liệu đầy đủ Thêm - Xem - Sửa - Xóa, sao chép biểu ghi, tìm theo mã/ISBN/tác giả/số đăng ký cá biệt.
+- Quản lý từng bản ấn phẩm đầy đủ Thêm - Sửa - Xóa bằng số đăng ký cá biệt, vị trí, tình trạng và trạng thái lưu thông.
 - Quy trình bổ sung: nháp → gửi duyệt → phê duyệt/từ chối → hoàn tất.
 - Khi hoàn tất đề xuất, hệ thống tự tạo đúng số lượng bản ấn phẩm và mã đăng ký cá biệt không trùng.
 - Tìm kiếm, lọc, phân trang, kiểm tra dữ liệu đầu vào và thông báo kết quả.
@@ -52,11 +52,11 @@ Xây dựng ứng dụng web quản lý phát triển và biên mục nguồn t�
 
 Quan hệ chính:
 
-- Tài liệu — tác giả: nhiều–nhiều.
-- Tài liệu — thể loại/nhà xuất bản: nhiều–một.
-- Tài liệu — bản ấn phẩm: một–nhiều.
-- Đề xuất bổ sung — nhà cung cấp: nhiều–một.
-- Đề xuất bổ sung — dòng đề xuất: một–nhiều; mỗi dòng tham chiếu một tài liệu.
+- Tài liệu - tác giả: nhiều-nhiều.
+- Tài liệu - thể loại/nhà xuất bản: nhiều-một.
+- Tài liệu - bản ấn phẩm: một-nhiều.
+- Đề xuất bổ sung - nhà cung cấp: nhiều-một.
+- Đề xuất bổ sung - dòng đề xuất: một-nhiều; mỗi dòng tham chiếu một tài liệu.
 
 ## 6. Nhật ký thực hiện
 
@@ -94,14 +94,14 @@ Phiên bản hiện tại đáp ứng phạm vi MVP đã xác định và có th
 - Thêm lưu file số, nhật ký kiểm toán, sao lưu và quan sát hệ thống.
 - Chạy test container với MySQL thật trong CI và kiểm thử trình duyệt end-to-end.
 
-### 2026-08-28 — xử lý đường dẫn chạy trên Windows
+### 2026-08-28 - xử lý đường dẫn chạy trên Windows
 
 - Tái hiện lỗi `ClassNotFoundException: vn.edu.docucatalog.DocuCatalogApplication` khi dùng `spring-boot:run`.
 - Xác nhận file `.class` tồn tại và chạy được với classpath tương đối, nhưng Java 26 không đọc được classpath tuyệt đối chứa ký tự tiếng Việt có dấu trong đường dẫn hiện tại.
 - Thống nhất đổi thư mục dự án sang `Xay dung ung dung web quan ly phat trien va bien muc nguon tai lieu` để Maven/Spring Boot Maven Plugin chỉ nhận đường dẫn ASCII.
 - Phát hiện dịch vụ MySQL trên máy đã được cài nhưng đang ở trạng thái `Stopped`; sau khi sửa đường dẫn cần khởi động MySQL trước khi chạy ứng dụng.
 
-### 2026-08-28 — bổ sung chế độ demo không cần MySQL
+### 2026-08-28 - bổ sung chế độ demo không cần MySQL
 
 - Chuyển H2 từ dependency chỉ dành cho test sang runtime để có thể dùng trong bản chạy demo.
 - Thêm profile `demo` với cơ sở dữ liệu H2 in-memory, tự tạo/xóa schema và bật bộ dữ liệu mẫu.
@@ -111,7 +111,7 @@ Phiên bản hiện tại đáp ứng phạm vi MVP đã xác định và có th
 - Kết quả toàn bộ suite sau thay đổi: 3 kiểm thử, 0 lỗi, 0 thất bại, 0 bỏ qua.
 - Smoke test `run-demo.cmd`: ứng dụng dùng URL H2 `jdbc:h2:mem:docucatalog-demo`, trang đăng nhập trả HTTP 200, tài khoản admin đăng nhập thành công và dashboard trả HTTP 200.
 
-### 2026-09-28 — cài đặt MySQL thật và hoàn thiện Flyway
+### 2026-09-28 - cài đặt MySQL thật và hoàn thiện Flyway
 
 - Kiểm kê môi trường trước khi thay đổi: phát hiện dịch vụ `mysql` cũ trỏ tới `D:\xampp\mysql\bin\mysqld.exe` không còn tồn tại; thư mục `D:\xampp` cũng không còn.
 - Theo sự cho phép của người dùng, xóa duy nhất đăng ký dịch vụ XAMPP/MySQL hỏng; không có thư mục dữ liệu cũ nào bị xóa.
@@ -127,7 +127,7 @@ Phiên bản hiện tại đáp ứng phạm vi MVP đã xác định và có th
 - Chạy lại toàn bộ test H2 sau thay đổi: **3 test, 0 lỗi, 0 thất bại, 0 bỏ qua**.
 - `mvnw.cmd clean package` hoàn tất lúc 05:03 ngày 2026-09-28: **BUILD SUCCESS**; artefact mới tại `target/docucatalog-1.0.0.jar`.
 
-### 2026-09-28 — sửa lỗi mất CSS và hoàn thiện môi trường Eclipse
+### 2026-09-28 - sửa lỗi mất CSS và hoàn thiện môi trường Eclipse
 
 - Tái hiện lỗi trực tiếp qua HTTP: `/css/app.css` vẫn trả `200 text/css`, nhưng HTML `/dashboard` không có thẻ `<head>`.
 - Xác định nguyên nhân ở Thymeleaf: trang con thay thẻ `<html>` bằng fragment được khai báo trên `<body>`, làm mất metadata, viewport và toàn bộ stylesheet.
@@ -141,10 +141,10 @@ Phiên bản hiện tại đáp ứng phạm vi MVP đã xác định và có th
 - `mvnw.cmd clean package` hoàn tất lúc 05:24:49: **BUILD SUCCESS**; executable JAR 65.004.261 byte được smoke-test trực tiếp với MySQL, Flyway và toàn bộ asset cục bộ rồi giữ chạy tại `http://localhost:8080`.
 - Xác minh Spring Tools ở chế độ headless: Eclipse 4.41.0, JDT, Maven m2e 2.11 và Spring Boot tooling 5.4.0 đều được nạp thành công; file ZIP cài đặt tạm 570 MB đã được xóa sau khi kiểm tra.
 
-### 2026-09-28 — hoàn thiện CRUD và nghiệp vụ vận hành thực tế
+### 2026-09-28 - hoàn thiện CRUD và nghiệp vụ vận hành thực tế
 
 - Rà soát ứng dụng theo tài liệu chính thức của FOLIO Inventory, Koha Cataloging và chuẩn MARC 21 của Library of Congress.
-- Hiển thị trực tiếp đủ thao tác **Chi tiết – Sửa – Sao chép – Xóa** trên danh sách biên mục; chức năng sao chép giữ metadata mô tả, sinh mã mới, bỏ ISBN và đưa biểu ghi mới về trạng thái bản nháp.
+- Hiển thị trực tiếp đủ thao tác **Chi tiết - Sửa - Sao chép - Xóa** trên danh sách biên mục; chức năng sao chép giữ metadata mô tả, sinh mã mới, bỏ ISBN và đưa biểu ghi mới về trạng thái bản nháp.
 - Bổ sung màn hình sửa toàn bộ thông tin bản ấn phẩm: số đăng ký cá biệt, ngày bổ sung, giá, vị trí, tình trạng vật lý, trạng thái lưu thông và ghi chú.
 - Mở rộng tìm kiếm biểu ghi theo số đăng ký cá biệt bằng subquery JPA, bên cạnh nhan đề, mã biên mục, ISBN và tác giả.
 - Chặn xóa bản ấn phẩm ở trạng thái `CHECKED_OUT`; vẫn giữ ràng buộc không xóa biểu ghi còn bản ấn phẩm hoặc nằm trong đề xuất bổ sung.
@@ -158,7 +158,7 @@ Phiên bản hiện tại đáp ứng phạm vi MVP đã xác định và có th
 - Kiểm tra ma trận quyền qua HTTP: `CATALOGER` mở trang tạo biểu ghi nhưng nhận 403 ở quản trị người dùng; `ACQUISITION` mở trang tạo đề xuất nhưng nhận 403 ở trang tạo biểu ghi.
 - `mvnw.cmd clean package` cuối cùng hoàn tất lúc 05:48 ngày 2026-09-28: **BUILD SUCCESS**; JAR 65.024.214 byte được khởi động với MySQL và đang phục vụ tại `http://localhost:8080`.
 
-### 2026-09-28 — hiện đại hóa UI, UX và hồ sơ tài khoản
+### 2026-09-28 - hiện đại hóa UI, UX và hồ sơ tài khoản
 
 - Áp dụng hệ token ngữ nghĩa cho theme sáng/tối, giữ font hệ thống và toàn bộ asset nội bộ; thêm `DESIGN_SYSTEM.md` để ghi quy ước component, responsive, chuyển động và accessibility.
 - Thiết kế lại dashboard, topbar, sidebar, trang đăng nhập, thẻ, bảng, nút và biểu mẫu; trạng thái điều hướng có `aria-current`, vùng tương tác chính tối thiểu 44px và focus ring rõ ràng.
@@ -172,20 +172,36 @@ Phiên bản hiện tại đáp ứng phạm vi MVP đã xác định và có th
 - QA trực quan bằng Chrome thật ở dashboard/hồ sơ desktop và viewport mobile 390px. Vòng đầu phát hiện cách chụp headless áp chiều rộng tối thiểu; chụp lại với DPR 2 xác nhận bố cục mobile không tràn ngang. Toàn bộ profile, thư viện và tiến trình QA tạm đã được dọn.
 - JAR cuối có kích thước **65.042.846 byte**, SHA-256 `7D8A0FA3DD798F66C4BB7E231348BAE0D456BB46ED44EAC0806ADF5A14A23543` và đang phục vụ với MySQL tại `http://localhost:8080`.
 
+### 2026-09-28 - đăng ký tài khoản, ảnh đại diện và hoàn thiện tài liệu sử dụng
+
+- Rà toàn bộ mã nguồn và tài liệu, thay các dấu gạch dài Unicode bằng ký tự `-` theo yêu cầu; kiểm tra cuối bằng `rg` không còn kết quả ngoài thư mục build và Git.
+- Viết lại nội dung ở đăng nhập, tổng quan, hồ sơ, bảo mật và quản trị tài khoản theo giọng tiếng Việt gần gũi hơn; đổi trạng thái tài khoản thành `Chờ duyệt`, `Đang dùng` và `Tạm khóa`.
+- Thêm trang đăng ký công khai nhưng giữ nguyên nguyên tắc hệ thống nội bộ: người dùng chỉ có thể yêu cầu vai trò biên mục hoặc bổ sung, tài khoản mới mặc định chưa được duyệt và chưa hoạt động, không thể tự cấp quyền quản trị.
+- Tích hợp thao tác duyệt tài khoản vào trang `Tài khoản và phân quyền`; quản trị viên có thể duyệt nhanh, sửa vai trò, tạm khóa hoặc mở lại tài khoản.
+- Thêm tải ảnh đại diện tại hồ sơ: chỉ nhận PNG/JPEG tối đa 2 MB, xác minh nội dung bằng ImageIO, giới hạn số điểm ảnh, cắt vuông ở giữa, chuẩn hóa thành JPEG 256 x 256 và sinh tên tệp từ ID tài khoản.
+- Ảnh được lưu ngoài database tại `app.avatar-storage-dir`; endpoint phục vụ ảnh yêu cầu đăng nhập, kiểm tra nghiêm tên tệp và ngăn đường dẫn thoát khỏi thư mục lưu trữ.
+- Thêm xem trước ảnh ở trình duyệt, thông báo tên/dung lượng tệp, nhãn truy cập được, vùng bấm phù hợp cảm ứng và bố cục form đăng ký responsive.
+- Thêm Flyway `V3__account_registration_and_avatar.sql`. MySQL 8.4 thật được nâng từ version 2 lên version 3, Hibernate `validate` thành công và không xóa dữ liệu hiện có.
+- Thêm `AccountAccessIntegrationTest` cho đăng ký qua HTTP, mật khẩu BCrypt, trạng thái chờ duyệt, kiểm tra tệp ảnh, cắt và resize ảnh. Toàn bộ suite sau `clean package`: **5 lớp, 9 ca kiểm thử, 0 lỗi, 0 thất bại, 0 bỏ qua**.
+- Smoke test end-to-end trên MySQL thật: tạo tài khoản tạm, xác nhận bị chặn trước duyệt, duyệt bằng quản trị viên, đăng nhập sau duyệt, tải ảnh và đọc lại JPEG đều thành công. Tài khoản và tất cả tệp thử đã được xóa ngay sau kiểm tra.
+- QA Chrome desktop và mobile. Emulation mobile chính xác 390 x 844 ghi nhận `innerWidth=390`, `documentScrollWidth=390`, form nằm từ 22 đến 368 px nên không có tràn ngang.
+- Viết lại `README.md` với giới thiệu dự án, vai trò, hướng dẫn từng nghiệp vụ, đăng ký/duyệt tài khoản, ảnh đại diện, cấu hình MySQL, Flyway, Eclipse, build/test, sao lưu và xử lý sự cố.
+- JAR cuối có kích thước **65.057.083 byte**, SHA-256 `919AD1C56938D2FE080661ADD919D483C1A503B52A41056457422D9A6A337949`; ứng dụng đang phục vụ với MySQL tại `http://localhost:8080`.
+
 ## 9. Tài liệu chính thức đã tham khảo
 
-- [MySQL 8.4 — cài đặt trên Windows](https://dev.mysql.com/doc/refman/8.4/en/windows-installation.html)
-- [MySQL 8.4 — khởi tạo data directory](https://dev.mysql.com/doc/refman/8.4/en/data-directory-initialization.html)
-- [MySQL — chạy server dưới dạng Windows Service](https://dev.mysql.com/doc/refman/8.4/en/windows-start-service.html)
-- [Spring Boot — database initialization và Flyway](https://docs.spring.io/spring-boot/how-to/data-initialization.html)
-- [Spring Boot — danh sách starter, gồm `spring-boot-starter-flyway`](https://docs.spring.io/spring-boot/reference/using/build-systems.html)
-- [Flyway — driver/module MySQL](https://documentation.red-gate.com/flyway/reference/database-driver-reference/mysql)
+- [MySQL 8.4 - cài đặt trên Windows](https://dev.mysql.com/doc/refman/8.4/en/windows-installation.html)
+- [MySQL 8.4 - khởi tạo data directory](https://dev.mysql.com/doc/refman/8.4/en/data-directory-initialization.html)
+- [MySQL - chạy server dưới dạng Windows Service](https://dev.mysql.com/doc/refman/8.4/en/windows-start-service.html)
+- [Spring Boot - database initialization và Flyway](https://docs.spring.io/spring-boot/how-to/data-initialization.html)
+- [Spring Boot - danh sách starter, gồm `spring-boot-starter-flyway`](https://docs.spring.io/spring-boot/reference/using/build-systems.html)
+- [Flyway - driver/module MySQL](https://documentation.red-gate.com/flyway/reference/database-driver-reference/mysql)
 - [Spring Tools for Eclipse](https://spring.io/tools/)
-- [Spring Tools — mã nguồn và hướng dẫn](https://github.com/spring-projects/spring-tools)
-- [Lombok — thiết lập cho Eclipse/STS](https://projectlombok.org/setup/eclipse)
-- [Bootstrap Icons — tài liệu chính thức](https://icons.getbootstrap.com/)
-- [Bootstrap Icons — mã nguồn và giấy phép MIT](https://github.com/twbs/icons)
-- [FOLIO Inventory — mô hình Instance, Holdings và Item](https://docs.folio.org/docs/metadata/inventory/)
-- [Koha Manual — Cataloging](https://github.com/Koha-Community/kohadocs/blob/master/source/cataloging.rst)
-- [Library of Congress — MARC 21 Format for Bibliographic Data](https://www.loc.gov/marc/bibliographic/)
-- [Evergreen — xóa biểu ghi thư mục rỗng](https://docs.evergreen-ils.org/docs/latest/cataloging/record_buckets.html)
+- [Spring Tools - mã nguồn và hướng dẫn](https://github.com/spring-projects/spring-tools)
+- [Lombok - thiết lập cho Eclipse/STS](https://projectlombok.org/setup/eclipse)
+- [Bootstrap Icons - tài liệu chính thức](https://icons.getbootstrap.com/)
+- [Bootstrap Icons - mã nguồn và giấy phép MIT](https://github.com/twbs/icons)
+- [FOLIO Inventory - mô hình Instance, Holdings và Item](https://docs.folio.org/docs/metadata/inventory/)
+- [Koha Manual - Cataloging](https://github.com/Koha-Community/kohadocs/blob/master/source/cataloging.rst)
+- [Library of Congress - MARC 21 Format for Bibliographic Data](https://www.loc.gov/marc/bibliographic/)
+- [Evergreen - xóa biểu ghi thư mục rỗng](https://docs.evergreen-ils.org/docs/latest/cataloging/record_buckets.html)

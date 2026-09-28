@@ -21,7 +21,7 @@ public class UserProfileForm {
     @Size(max = 100, message = "Đơn vị công tác tối đa 100 ký tự")
     private String department;
 
-    @Pattern(regexp = "^$|^[0-9+().\\-\\s]{7,20}$", message = "Số điện thoại chỉ gồm 7–20 chữ số và ký hiệu hợp lệ")
+    @Pattern(regexp = "^$|^[0-9+().\\-\\s]{7,20}$", message = "Số điện thoại chỉ gồm 7-20 chữ số và ký hiệu hợp lệ")
     private String phone;
 
     @Size(max = 500, message = "Giới thiệu tối đa 500 ký tự")
